@@ -24,11 +24,11 @@ epsg3847='
 +units=m
 +no_defs'
 
-# From RT 90 2.5 gon V to SWEREF 99.
-# The incantation is taken from
+# From RT 90 2.5 gon V to SWEREF 99.  The incantation is taken from
 # http://wiki.openstreetmap.org/wiki/Converting_to_WGS84#Sweden
-# but the exact numbers from epsg3847.
-#
+# but the exact numbers come from EPSG=3847. Unclear if the wiki was
+# sloppy with the fine details, or if it's an effect of a difference
+# between WGS84 and SWEREF99.
 foo='
 +ellps=WGS84
 +proj=tmerc
@@ -45,6 +45,7 @@ echo "$A
 $B
 $C
 $D" | proj -Irs $foo -W6
+echo
 
 # Inverting it seems to work alright too, except it's a bitch
 # to deal with proj's usage of ' and " in its input format.
@@ -55,6 +56,25 @@ echo 67d05\'26.452769\" 21d02\'05.101575\" | proj -rs $foo -f %.3f
 echo 63d32\'14.761735\" 16d14\'59.594626\" | proj -rs $foo -f %.3f
 echo 60d09\'33.882413\" 14d45\'28.167152\" | proj -rs $foo -f %.3f
 echo 56d21\'17.199245\" 13d52\'23.754022\" | proj -rs $foo -f %.3f
+echo
 
-# ... which means the remaining problem is converting
-# SWEREF99 planar coordinates <-> lat/long
+# ... which means the remaining problem is converting SWEREF99 planar
+# coordinates <-> lat/long. And for that it seems EPSG=3006 from the
+# libproj distribution is correct. Its comment there is "SWEREF99 TM".
+#
+bar='+init=epsg:3006'
+
+echo 67d05\'26.452769\" 21d02\'05.101575\" | proj -rs $bar -f %.3f
+echo 63d32\'14.761735\" 16d14\'59.594626\" | proj -rs $bar -f %.3f
+echo 60d09\'33.882413\" 14d45\'28.167152\" | proj -rs $bar -f %.3f
+echo 56d21\'17.199245\" 13d52\'23.754022\" | proj -rs $bar -f %.3f
+echo
+
+# Finally, it turns out that you can use cs2cs(1) to combine the
+# two things. Only two drawbacks: a one-millimeter error on D,
+# and for some reason a height coordinate is also generated.
+
+echo "$A
+$B
+$C
+$D" | cs2cs -rs $foo +to $bar -f %.3f
