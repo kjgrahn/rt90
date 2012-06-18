@@ -3,6 +3,9 @@
 .IP \\fB\\$*
 ..
 .
+.ds rt90 \s-1RT90\s0
+.ds sweref99 \s-1SWEREF\ 99\s0
+.
 .
 .
 .TH rt90 1 "JUN 2012" "RT90" "User Manuals"
@@ -18,13 +21,9 @@ rt90 \- coordinate conversion between RT90 and SWEREF99
 .
 .br
 .B rt90
-.B --from
-.RI [ \-N ]
-.RI [ "north east" ]
-.
-.br
-.B rt90
-.B --to
+.RB [ --from
+|
+.BR --to ]
 .RI [ \-N ]
 .RI [ "north east" ]
 .
@@ -39,36 +38,64 @@ rt90 \- coordinate conversion between RT90 and SWEREF99
 .B --help
 .
 .SH "DESCRIPTION"
+.
 .B rt90
 is a small utility for safely converting between
-the coordinate systems
-.B "RT90 2.5\~gon\~V"
+the coordinate systems (or whatever the proper term is)
+.B "\s-1RT90\s0\ 2.5\ gon\ V"
 and
-.B "SWEREF\~99\~TM".
-RT90 is the most popular coordinate system for use
-in Sweden; SWEREF\~99 is the new standard we're switching to.
+.BR "\s-1SWEREF\ 99\ TM\s0" .
+\*[rt90] is the most popular coordinate system for use
+in Sweden; \*[sweref99] is the new standard we're switching to.
 Both assign a north and an east coordinate,
 expressed in meters,
 to every spot in the country (and some spots
 .I outside
 it, I bet).
+.
+.
+.SS "Coordinate format"
+Coordinates may be given on the command line, or as standard input.
+.BR "On the command line" ,
+it's just two numerical arguments \- north and east.
+.BR "On standard input" ,
+any line which is just whitespace and two suitably large
+numbers is processed as a coordinate and translated.
+Other lines are passed straight through.
 .PP
-Usage ...
+\*[sweref99] coordinates are always seven digits northing and six digits easting,
+e.g. 7454204\ 761811.
+.PP
+For \*[rt90] coordinates, the typical format is seven digits northing and
+seven digits easting, e.g.
+\s-264\s052109\ \s-213\s068036 .
+This is with 1\ m resolution.
+There are also shorter forms with 10\ m, 100\ m and 1\ km resolution:
+\s-264\s05211\ \s-213\s06804,
+\s-264\s0521\ \s-213\s0680,
+\s-264\s052\ \s-213\s068.
+Many tools today seem to only accept the full 7-digit format,
+but older data is often not in 1m resolution. Some sources
+use different resolutions to indicate the actual accuracy.
+.PP
+No matter what, a \*[rt90] coordinate cannot be mistaken for a \*[sweref99] one;
+the latter always uses 7+6 digits and the former never does.
+.
 .
 .SH "OPTIONS"
 .
 .BP --from
 Translate only
-.I "from RT90"
-to SWEREF\~99.
-Only coordinates which are likely to be correct RT90 coordinates
+.I "from \*[rt90]"
+to \*[sweref99].
+Only coordinates which are likely to be correct \*[rt90] coordinates
 are translated.
 .
 .BP --to,\ --back
 Translate only
-from SWEREF\~99
-.IR "to RT90" .
-Only coordinates which seem like correct SWEREF\~99 coordinates
+from \*[sweref99]
+.IR "to \*[rt90]" .
+Only coordinates which seem like correct \*[sweref99] coordinates
 are translated.
 .BP
 The synonym
@@ -77,16 +104,20 @@ is supposed to be easier to remember; you're going
 .I back
 to an older system.
 .
+.PP
+Without either of these options, coordinates which look like \*[rt90]
+are translated to \*[sweref99], and vice versa.
+.
 .BP \-4,\ \-5,\ \-6,\ \-7
-When translating to RT90, use the 4-, 5-, 6- or 7-digit format
+When translating to \*[rt90], use the 4-, 5-, 6- or 7-digit format
 (rounded to 1km; 100m; 10m; 1m).
-Many tools today seem to only accept the full 7-digit format,
-but older data is often not in 1m resolution and some sources
-use different resolutions to indicate the actual accuracy.
 .BP
 When translating
 .I from
-RT90, only accept coordinates at this resolution.
+\*[rt90], only accept coordinates at this resolution.
+In this case, several of them may be given;
+.B \-67
+will accept six- or seven-digit \*[rt90] coordinates.
 .
 .BP --test
 Self-test, using the four reference points A\-D published by
@@ -94,34 +125,96 @@ Self-test, using the four reference points A\-D published by
 Use it to build confidence if you don't trust this tool
 (I wouldn't, without this feature).
 .
-.SH "COORDINATE FORMAT"
+.
+.SH "EXIT STATUS"
+Non-zero if the transformation clearly failed (input or would-be output doesn't
+have the correct number of digits).
 .
 .
 .SH "FILES"
-\-
+None.
+.
 .
 .SH "ENVIRONMENT"
-\-
+Nothing special, except for whatever the underlying
+.BR proj (1)
+or
+.BR cs2cs (1)
+tools may use.
+.
 .
 .SH "BUGS"
-\-
+.
+Coordinates with decimal places (sub-meter resolution) are not accepted,
+although the quality of the underlying transformations seems to
+make that meaningful.
+.
+.PP
+There are variations on both \*[rt90] and \*[sweref99] other than
+\s-1RT90\s0\ 2.5\ gon\ V
+and
+\s-1SWEREF\ 99\ TM\s0,
+better suited to different parts of the country. These are
+.IR "not supported" .
+I hope they are rarely relevant in situations where you'd want to use
+this tool.
+.
+.PP
+.B rt90
+works by invoking
+.BR proj (1)
+or
+.BR cs2cs (1)
+once per coordinate. This is safe, but inefficient.
+.
+.PP
+I don't own a GPS receiver.
+If I understand correctly, these tend to use
+.B \s-1WGS84\s0
+rather than \*[sweref99].
+I also understand that the difference between these two is irrelevant
+to most people \-
+but if it isn't irrelevant to
+.IR you ,
+.B rt90
+is of no use.
+.
+.PP
+I'm not an expert in this area, just someone who sometimes wants to
+translate my coordinates.
+The underlying tools and concepts are not easy to understand and
+handle correctly, and my only indication that I haven't messed up
+completely is the output from
+.BR --test .
+.
 .
 .SH "AUTHOR"
+.
 J\(:orgen Grahn
 .IR \[fo]grahn+src@snipabacken.se\[fc] .
+.PP
 This is really just a wrapper script; the operation
 relies entirely on the
 .B proj
 (also known as
-.BR PROJ.4 )
-set of tools, and information on RT90/SWEREF\~99 gleaned from
+.BR libproj ,
+.B libproj0
+or
+.BR \s-1PROJ.4\s0 )
+set of tools, and information on \*[rt90]/\*[sweref99] gleaned from
 a multitude of sources.
 .
+.
 .SH "LICENSE"
+.
 The Modified BSD license.
 .
+.
 .SH "SEE ALSO"
+.
 .BR proj (1),
 .BR cs2cs (1),
+.br
 .RI \[fo] http://www.remotesensing.org/proj \[fc],
+.br
 .RI \[fo] http://www.lantmateriet.se \[fc].
