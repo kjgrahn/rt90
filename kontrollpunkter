@@ -1,0 +1,69 @@
+Samband och parametrar
+Lantmäteriet I-Divisionen Geodesi
+2006-05-03
+
+http://www.lantmateriet.se/upload/filer/kartor/geodesi_gps_och_detaljmatning/Transformationer/SWEREF99_RT90_Samband/kontrollpunkter.pdf
+
+Kontrollpunkter RT90 <-> SWEREF 99
+
+Plana koordinater i RT 90 2.5 gon V 0:-15:
+A: x = 7453389.762 m y = 1727060.905 m
+B: x = 7047738.415 m y = 1522128.637 m
+C: x = 6671665.273 m y = 1441843.186 m
+D: x = 6249111.351 m y = 1380573.079 m
+
+
+Direktprojektion
+
+Latitud och longitud i SWEREF 99:
+A: lat = 67° 05' 26.452769'' long = 21° 02' 05.101575''
+B: lat = 63° 32' 14.761735'' long = 16° 14' 59.594626''
+C: lat = 60° 09' 33.882413'' long = 14° 45' 28.167152''
+D: lat = 56° 21' 17.199245'' long = 13° 52' 23.754022''
+
+Plana koordinater i SWEREF 99 TM:
+A: x = 7454204.638 m y = 761811.242 m
+B: x = 7046077.605 m y = 562140.337 m
+C: x = 6669189.376 m y = 486557.055 m
+D: x = 6246136.458 m y = 430374.835 m
+
+
+7-parametertransformation
+
+Latitud och longitud i RT 90:
+A: lat = 67° 05' 31.562861'' long = 21° 02' 21.178495''
+B: lat = 63° 32' 18.479016'' long = 16° 15' 11.688015''
+C: lat = 60° 09' 36.127426'' long = 14° 45' 38.951409''
+D: lat = 56° 21' 17.776903'' long = 13° 52' 33.749724''
+
+Geocentriska koordinater i RT 90 (höjd = 0 m):
+A: 2323506.4316 m 893735.7019 m 5851808.1136 m
+B: 2735501.0700 m 797494.0303 m 5686384.2580 m
+C: 3076269.3166 m 810535.3469 m 5508800.8354 m
+D: 3438220.3410 m 849347.9170 m 5285896.6859 m
+
+Geocentriska koordinater i SWEREF 99:
+A: 2324011.7156 m 893722.1771 m 5852383.3450 m
+B: 2736001.3596 m 797465.7925 m 5686955.6113 m
+C: 3076768.2064 m 810494.7707 m 5509368.5971 m
+D: 3438718.2379 m 849294.0934 m 5286460.5291 m
+
+Latitud och longitud i SWEREF 99:
+A: lat = 67° 05' 26.454925'' long = 21° 02' 05.105679''
+B: lat = 63° 32' 14.759990'' long = 16° 14' 59.591438''
+C: lat = 60° 09' 33.881760'' long = 14° 45' 28.167520''
+D: lat = 56° 21' 17.200061'' long = 13° 52' 23.753431''
+
+Plana koordinater i SWEREF 99 TM:
+A: x = 7454204.710 m y = 761811.285 m
+B: x = 7046077.551 m y = 562140.294 m
+C: x = 6669189.356 m y = 486557.060 m
+D: x = 6246136.483 m y = 430374.825 m
+
+
+Radiell skillnad i SWEREF 99 TM mellan transformationsmetoderna.
+
+A: 0.084 m
+B: 0.069 m
+C: 0.021 m
+D: 0.027 m

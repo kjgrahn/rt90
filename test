@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+#
+# LMV's test data (points A--D)
+
+# RT 90 2.5 gon V
+A="7453389.762 1727060.905"
+B="7047738.415 1522128.637"
+C="6671665.273 1441843.186"
+D="6249111.351 1380573.079"
+
+# epsg:3847 from the libproj distribution. It documents it as
+# "SWEREF99 / RT90 2.5 gon V emulation".
+#
+epsg3847='
++proj=tmerc
++lat_0=0
++lon_0=15.80628452944445
++k=1.00000561024
++x_0=1500064.274
++y_0=-667.711
++ellps=GRS80
++towgs84=0,0,0,0,0,0,0
++units=m
++no_defs'
+
+# From RT 90 2.5 gon V to SWEREF 99.
+# The incantation is taken from
+# http://wiki.openstreetmap.org/wiki/Converting_to_WGS84#Sweden
+# but the exact numbers from epsg3847.
+#
+foo='
+-Irs
++ellps=WGS84
++proj=tmerc
++lat_0=0
++lon_0=15.80628452944445
++k=1.00000561024
++x_0=1500064.274
++y_0=-667.711'
+
+# The result (lat, long) corresponds (to five decimal places on the
+# seconds) to the LMV test data.
+#
+echo "$A
+$B
+$C
+$D" | proj $foo -W6
