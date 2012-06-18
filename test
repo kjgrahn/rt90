@@ -30,7 +30,6 @@ epsg3847='
 # but the exact numbers from epsg3847.
 #
 foo='
--Irs
 +ellps=WGS84
 +proj=tmerc
 +lat_0=0
@@ -45,4 +44,17 @@ foo='
 echo "$A
 $B
 $C
-$D" | proj $foo -W6
+$D" | proj -Irs $foo -W6
+
+# Inverting it seems to work alright too, except it's a bitch
+# to deal with proj's usage of ' and " in its input format.
+# Here I once again use the LMV reference data.
+# The output (on my system) is exact down to millimeters.
+#
+echo 67d05\'26.452769\" 21d02\'05.101575\" | proj -rs $foo -f %.3f
+echo 63d32\'14.761735\" 16d14\'59.594626\" | proj -rs $foo -f %.3f
+echo 60d09\'33.882413\" 14d45\'28.167152\" | proj -rs $foo -f %.3f
+echo 56d21\'17.199245\" 13d52\'23.754022\" | proj -rs $foo -f %.3f
+
+# ... which means the remaining problem is converting
+# SWEREF99 planar coordinates <-> lat/long
