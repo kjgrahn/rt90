@@ -1,0 +1,127 @@
+.ss 12 0
+.de BP
+.IP \\fB\\$*
+..
+.
+.
+.
+.TH rt90 1 "JUN 2012" "RT90" "User Manuals"
+.
+.SH "NAME"
+rt90 \- coordinate conversion between RT90 and SWEREF99
+.
+.SH "SYNOPSIS"
+.
+.B rt90
+.RI [ \-N ]
+.RI [ "north east" ]
+.
+.br
+.B rt90
+.B --from
+.RI [ \-N ]
+.RI [ "north east" ]
+.
+.br
+.B rt90
+.B --to
+.RI [ \-N ]
+.RI [ "north east" ]
+.
+.br
+.B rt90
+.B --test
+.br
+.B rt90
+.B --version
+.br
+.B rt90
+.B --help
+.
+.SH "DESCRIPTION"
+.B rt90
+is a small utility for safely converting between
+the coordinate systems
+.B "RT90 2.5\~gon\~V"
+and
+.B "SWEREF\~99\~TM".
+RT90 is the most popular coordinate system for use
+in Sweden; SWEREF\~99 is the new standard we're switching to.
+Both assign a north and an east coordinate,
+expressed in meters,
+to every spot in the country (and some spots
+.I outside
+it, I bet).
+.PP
+Usage ...
+.
+.SH "OPTIONS"
+.
+.BP --from
+Translate only
+.I "from RT90"
+to SWEREF\~99.
+Only coordinates which are likely to be correct RT90 coordinates
+are translated.
+.
+.BP --to,\ --back
+Translate only
+from SWEREF\~99
+.IR "to RT90" .
+Only coordinates which seem like correct SWEREF\~99 coordinates
+are translated.
+.BP
+The synonym
+.B --back
+is supposed to be easier to remember; you're going
+.I back
+to an older system.
+.
+.BP \-4,\ \-5,\ \-6,\ \-7
+When translating to RT90, use the 4-, 5-, 6- or 7-digit format
+(rounded to 1km; 100m; 10m; 1m).
+Many tools today seem to only accept the full 7-digit format,
+but older data is often not in 1m resolution and some sources
+use different resolutions to indicate the actual accuracy.
+.BP
+When translating
+.I from
+RT90, only accept coordinates at this resolution.
+.
+.BP --test
+Self-test, using the four reference points A\-D published by
+.IR Lantm\(:ateriet .
+Use it to build confidence if you don't trust this tool
+(I wouldn't, without this feature).
+.
+.SH "COORDINATE FORMAT"
+.
+.
+.SH "FILES"
+\-
+.
+.SH "ENVIRONMENT"
+\-
+.
+.SH "BUGS"
+\-
+.
+.SH "AUTHOR"
+J\(:orgen Grahn
+.IR \[fo]grahn+src@snipabacken.se\[fc] .
+This is really just a wrapper script; the operation
+relies entirely on the
+.B proj
+(also known as
+.BR PROJ.4 )
+set of tools, and information on RT90/SWEREF\~99 gleaned from
+a multitude of sources.
+.
+.SH "LICENSE"
+The Modified BSD license.
+.
+.SH "SEE ALSO"
+.BR proj (1),
+.BR cs2cs (1),
+.RI \[fo] http://www.remotesensing.org/proj \[fc],
+.RI \[fo] http://www.lantmateriet.se \[fc].
