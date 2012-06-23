@@ -1,0 +1,123 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+#
+# rt90 - coordinate conversion between RT90 and SWEREF99
+#
+# Copyright (c) 2012 Jörgen Grahn
+# All rights reserved.
+#
+"coordinate conversion between RT90 and SWEREF99"
+
+import os
+import os.path
+import getopt
+import sys
+
+
+class Accuracy:
+    """RT90 accuracy for both input and output, i.e.  whether they
+    should be output in 4--7 digits (1km--1m), and which number of
+    digits should be tolerated.
+    """
+    def __init__(self, a):
+        "Init from a sequence of numbers; default 4--7."
+        if not a:
+            a = [5, 6, 7]
+        self._out = a[-1]
+        self._in = set(a)
+
+
+class Parser:
+    """Parse a line of text as a coordinate, according to
+    'direction' and 'accuracy'.
+    """
+    def __init__(self, direction, accuracy):
+        pass
+
+
+def selftest():
+    """Perform self-test using LMV's four test coordinates. If both
+    RT90 -> SWEREF99 and SWEREF99 -> RT90 is correct to 1 m resolution,
+    returns 0 and prints nothing.
+    """
+    #              RT 90 2.5 gon V             SWEREF 99 TM
+    data = (('A', (7453389.762, 1727060.905), (7454204.638, 761811.242)),
+            ('B', (7047738.415, 1522128.637), (7046077.605, 562140.337)),
+            ('C', (6671665.273, 1441843.186), (6669189.376, 486557.055)),
+            ('D', (6249111.351, 1380573.079), (6246136.458, 430374.835)))
+    return 0
+
+
+def convert_f(direction, accuracy, f):
+    """Convert coordinates in file-like object 'f' and write to
+    standard output, using 'accuracy' for RT90 accuracy.
+    Direction is "from" RT90, "to" RT90, or None (convert in either
+    direction). Returns a shell exit code.
+    """
+    rc = 0
+    p = Parser(direction, accuracy)
+    for s in f:
+        if p.parse(s):
+            pass
+        else:
+            f.write(s)
+    return rc
+
+
+if __name__ == "__main__":
+    prog = os.path.split(sys.argv[0])[1]
+    usage = ['[-4567] [north east]',
+             '[--from | --to] [-4567] [north east]',
+             '--test',
+             '--version',
+             '--help']
+    usage = [ '%s %s' % (prog, x) for x in usage ]
+    usage = '\n       '.join(usage)
+    usage = '%s: %s' % ('usage', usage)
+
+    try:
+        opts, argv = getopt.getopt(sys.argv[1:],
+                                   '4567',
+                                   ('from', 'to', 'back',
+                                    'test',
+                                    'version', 'help'))
+        version = None
+        help = None
+        test = None
+        accuracy = []
+        direction = None
+        for option, _ in opts:
+            if   option == '-4': accuracy.append(4)
+            elif option == '-5': accuracy.append(5)
+            elif option == '-6': accuracy.append(6)
+            elif option == '-7': accuracy.append(7)
+            elif option == '--from': direction = 'from'
+            elif option in ('--to', '--back'): direction = 'to'
+            elif option == '--test': test = 1
+            elif option == '--version': version = 1
+            elif option == '--help': help = 1
+        if len(argv) not in (0, 2):
+            raise ValueError('wrong number of arguments')
+        coord = argv
+        if version:
+            print '%s, unknown version' % prog
+            print 'Copyright (C) 2012 Jörgen Grahn'
+            sys.exit(0)
+        if help:
+            print usage
+            sys.exit(0)
+    except (ValueError, getopt.GetoptError), s:
+        print >>sys.stderr, 'error:', s
+        print >>sys.stderr, usage
+        sys.exit(1)
+
+    if test:
+        sys.exit(selftest())
+
+    accuracy = Accuracy(accuracy)
+
+    if coord:
+        coord = ' '.join(coord)
+        sys.exit(convert(direction, accuracy, coord))
+    else:
+        sys.exit(convert_f(direction, accuracy, sys.stdin))
