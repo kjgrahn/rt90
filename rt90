@@ -20,32 +20,99 @@ class Accuracy:
     digits should be tolerated.
     """
     def __init__(self, a):
-        "Init from a sequence of numbers; default 4--7."
-        if not a:
-            a = [5, 6, 7]
-        self._out = a[-1]
-        self._in = set(a)
+        "Init from a sequence of numbers."
+        self.output = a[-1]
+        self.input = set(a)
 
 
-class Parser:
-    """Parse a line of text as a coordinate, according to
-    'direction' and 'accuracy'.
+class Forward:
+    """Conversion RT90 2.5 gon V --> SWEREF 99 TM.
+    """
+    def __call__(self, rt90): pass
+
+
+class Backward:
+    """Conversion SWEREF 99 TM --> RT90 2.5 gon V.
+    """
+
+
+class Convert:
+    """Parse and convert a line of text as a coordinate, according to
+    'direction' and 'accuracy'. Deals with strings only.
     """
     def __init__(self, direction, accuracy):
-        pass
+        self._from = Forward()
+        self._to   = Backward()
+        if direction=='from': self._to = None
+        elif direction=='to': self._from = None
+        self._accuracy = accuracy
+    def _valid_rt90(self, ss):
+        nn = [ len(x) for x in ss ]
+        return nn[0] == nn[1] and nn[0] in self._accuracy.input
+    def _valid_sweref99(self, ss):
+        nn = [ len(x) for x in ss ]
+        return nn == [7, 6]
+    def convert(self, s):
+        """Try to convert 's' as a coordinate.  If it makes sense,
+        return True and set 'self.coord'. Otherwise, may set 'self.err'
+        to indicate a failed conversion attempt.
+        """
+        ss = s.split()
+        if len(ss) != 2: return False
+        try:
+            coord = [ int(x) for x in ss ]
+        except ValueError:
+            return False
+        translation = None
+        if self._valid_sweref99(ss):
+            translation = self._to
+        elif self._valid_rt90(ss):
+            translation = self._from
 
+        if not translation: return False
+        pass
 
 def selftest():
     """Perform self-test using LMV's four test coordinates. If both
     RT90 -> SWEREF99 and SWEREF99 -> RT90 is correct to 1 m resolution,
     returns 0 and prints nothing.
     """
+    def close_enough(a, b):
+        dx = a[0]-b[0]
+        dy = a[1]-b[1]
+        return dx*dx + dy*dy < 1
     #              RT 90 2.5 gon V             SWEREF 99 TM
     data = (('A', (7453389.762, 1727060.905), (7454204.638, 761811.242)),
             ('B', (7047738.415, 1522128.637), (7046077.605, 562140.337)),
             ('C', (6671665.273, 1441843.186), (6669189.376, 486557.055)),
             ('D', (6249111.351, 1380573.079), (6246136.458, 430374.835)))
-    return 0
+    rc = 0
+    forward = Forward()
+    backward = Backward()
+    out = sys.stdout.write
+    for name, rt90, sweref99 in data:
+        if not close_enough(forward(rt90), sweref99):
+            out('Reference point %s failed conversion to SWEREF 99\n' % name)
+            rc = 1
+        if not close_enough(backward(sweref), rt90):
+            out('Reference point %s failed conversion to RT90\n' % name)
+            rc = 1
+    return rc
+
+
+def convert(direction, accuracy, coord):
+    """As 'convert_f' on a file containing only one line, 'coord'.
+    """
+    rc = 0
+    cvt = Convert(direction, accuracy)
+    out = sys.stdout.write
+    err = sys.stderr.write
+    if cvt.convert(s):
+        out.write('%s\n' % cvt.coord)
+    else:
+        err('conversion failed\n' % n)
+        rc = 1
+    return rc
 
 
 def convert_f(direction, accuracy, f):
@@ -55,12 +122,20 @@ def convert_f(direction, accuracy, f):
     direction). Returns a shell exit code.
     """
     rc = 0
-    p = Parser(direction, accuracy)
+    n = 0
+    cvt = Convert(direction, accuracy)
+    out = sys.stdout.write
+    err = sys.stderr.write
     for s in f:
-        if p.parse(s):
-            pass
+        n += 1
+        if cvt.convert(s):
+            out.write('%s\n' % cvt.result)
+        elif cvt.err:
+            err('conversion error on line %d\n' % n)
+            out.write(s)
+            rc = 1
         else:
-            f.write(s)
+            out.write(s)
     return rc
 
 
@@ -114,6 +189,8 @@ if __name__ == "__main__":
     if test:
         sys.exit(selftest())
 
+    if not accuracy:
+        accuracy = [5, 6, 7]
     accuracy = Accuracy(accuracy)
 
     if coord:
