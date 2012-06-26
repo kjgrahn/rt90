@@ -12,7 +12,7 @@ INSTALLBASE=/usr/local
 all: 
 
 .PHONY: install
-install:
+install: rt90
 	install -m755 rt90 $(INSTALLBASE)/bin/
 	install -m644 rt90.1 $(INSTALLBASE)/man/man1/
 
