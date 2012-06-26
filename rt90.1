@@ -124,6 +124,10 @@ Self-test, using the four reference points A\-D published by
 .IR Lantm\(:ateriet .
 Use it to build confidence if you don't trust this tool
 (I wouldn't, without this feature).
+.BP
+The most likely reason for a failure is that
+.BR cs2cs (1)
+is not in your path.
 .
 .
 .SH "EXIT STATUS"
@@ -137,10 +141,8 @@ None.
 .
 .SH "ENVIRONMENT"
 Nothing special, except for whatever the underlying
-.BR proj (1)
-or
 .BR cs2cs (1)
-tools may use.
+tool may use.
 .
 .
 .SH "BUGS"
@@ -162,8 +164,6 @@ this tool.
 .PP
 .B rt90
 works by invoking
-.BR proj (1)
-or
 .BR cs2cs (1)
 once per coordinate. This is safe, but inefficient.
 .
@@ -212,8 +212,8 @@ The Modified BSD license.
 .
 .SH "SEE ALSO"
 .
-.BR proj (1),
 .BR cs2cs (1),
+.BR proj (1),
 .br
 .RI \[fo] http://www.remotesensing.org/proj \[fc],
 .br
