@@ -1,15 +1,22 @@
 #!/bin/bash
 #
-#
-# LMV's test data (points A--D)
+# Experiments with proj(1) and RT90/SWEREF99 transformations.
+# I had to experiment a lot to find out how this really works.
 
+# LMV's test data (points A--D)
 # RT 90 2.5 gon V
 A="7453389.762 1727060.905"
 B="7047738.415 1522128.637"
 C="6671665.273 1441843.186"
 D="6249111.351 1380573.079"
 
-# epsg:3847 from the libproj distribution. It documents it as
+# SWEREF 99 TM
+A99="7454204.638 761811.242"
+B99="7046077.605 562140.337"
+C99="6669189.376 486557.055"
+D99="6246136.458 430374.835"
+
+# epsg:3847 from the libproj distribution, which documents it as
 # "SWEREF99 / RT90 2.5 gon V emulation".
 #
 epsg3847='
@@ -71,10 +78,16 @@ echo 56d21\'17.199245\" 13d52\'23.754022\" | proj -rs $bar -f %.3f
 echo
 
 # Finally, it turns out that you can use cs2cs(1) to combine the
-# two things. Only two drawbacks: a one-millimeter error on D,
-# and for some reason a height coordinate is also generated.
+# two things. Only two drawbacks: a few one-millimeter errors here and
+# there, and for some reason a height coordinate is also generated.
 
 echo "$A
 $B
 $C
 $D" | cs2cs -rs $foo +to $bar -f %.3f
+echo
+
+echo "$A99
+$B99
+$C99
+$D99" | cs2cs -rs $bar +to $foo -f %.3f
