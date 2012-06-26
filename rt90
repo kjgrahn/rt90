@@ -12,6 +12,7 @@ import os
 import os.path
 import getopt
 import sys
+import subprocess
 
 
 class Accuracy:
@@ -25,16 +26,55 @@ class Accuracy:
         self.input = set(a)
 
 
-class Forward:
+class Proj:
+    """Invoking cs2cs(1), really.  Not instantiated
+    directly; just the common parts of Forward and Backward.
+    """
+    _rt90_sweref99 = ['+ellps=WGS84',
+                      '+proj=tmerc',
+                      '+lat_0=0',
+                      '+lon_0=15.80628452944445',
+                      '+k=1.00000561024',
+                      '+x_0=1500064.274',
+                      '+y_0=-667.711']
+    _sweref99_planar = ['+init=epsg:3006']
+    def __call__(self, coord):
+        """Perform the translation, by calling proj's cs2cs(1).
+        Input is a tuple, and treated as three-decimal floats
+        (millimeter resolution). That's also the output
+        resolution we request.
+
+        On error, None is returned.
+        """
+        # It would be nice to exec cs2cs once and use it for
+        # all translations, but I'm unsure if that would be safe;
+        # writing and reading to pipes can cause deadlock if the
+        # called program isn't carefully written, and I doubt
+        # whether cs2cs is.
+        coord = '%.3f %.3f\n' % coord
+        sub = subprocess.Popen(self._args, bufsize=1,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               close_fds=True)
+        sub.stdin.write(coord)
+        sub.stdin.close()
+        s = sub.stdout.readline()
+        rc = sub.wait()
+        x, y, z = s.split()
+        return float(x), float(y)
+
+class Forward(Proj):
     """Conversion RT90 2.5 gon V --> SWEREF 99 TM.
     """
-    def __call__(self, rt90): pass
+    _args = ['cs2cs', '-rs'] + Proj._rt90_sweref99 + \
+        ['+to'] + Proj._sweref99_planar + ['-f', '%.3f']
 
-
-class Backward:
+class Backward(Proj):
     """Conversion SWEREF 99 TM --> RT90 2.5 gon V.
     """
-
+    _args = ['cs2cs', '-rs'] + Proj._sweref99_planar + \
+        ['+to'] + Proj._rt90_sweref99 + ['-f', '%.3f']
 
 class Convert:
     """Parse and convert a line of text as a coordinate, according to
@@ -72,15 +112,16 @@ class Convert:
         if not translation: return False
         pass
 
+
 def selftest():
     """Perform self-test using LMV's four test coordinates. If both
-    RT90 -> SWEREF99 and SWEREF99 -> RT90 is correct to 1 m resolution,
+    RT90 -> SWEREF99 and SWEREF99 -> RT90 is correct to 0.1 m resolution,
     returns 0 and prints nothing.
     """
     def close_enough(a, b):
         dx = a[0]-b[0]
         dy = a[1]-b[1]
-        return dx*dx + dy*dy < 1
+        return dx*dx + dy*dy < 0.1
     #              RT 90 2.5 gon V             SWEREF 99 TM
     data = (('A', (7453389.762, 1727060.905), (7454204.638, 761811.242)),
             ('B', (7047738.415, 1522128.637), (7046077.605, 562140.337)),
@@ -93,9 +134,15 @@ def selftest():
     for name, rt90, sweref99 in data:
         if not close_enough(forward(rt90), sweref99):
             out('Reference point %s failed conversion to SWEREF 99\n' % name)
+            out('input was       : %s\n' % `rt90`)
+            out('output should be: %s\n' % `sweref99`)
+            out('but output was  : %s\n' % `forward(rt90)`)
             rc = 1
-        if not close_enough(backward(sweref), rt90):
+        if not close_enough(backward(sweref99), rt90):
             out('Reference point %s failed conversion to RT90\n' % name)
+            out('input was       : %s\n' % `sweref99`)
+            out('output should be: %s\n' % `rt90`)
+            out('but output was  : %s\n' % `backward(sweref99)`)
             rc = 1
     return rc
 
