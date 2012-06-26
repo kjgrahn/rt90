@@ -1,0 +1,30 @@
+NAME
+       rt90 - coordinate conversion between RT90 and SWEREF99
+
+SYNOPSIS
+       rt90 [-N] [north east]
+       rt90 [--from | --to] [-N] [north east]
+       rt90 --test
+       rt90 --version
+       rt90 --help
+
+DESCRIPTION
+       rt90  is  a  small utility for safely converting between the coordinate
+       systems  (or  whatever  the  proper   term   is)   RT90 2.5 gon V   and
+       SWEREF 99 TM.  RT90  is  the  most popular coordinate system for use in
+       Sweden; SWEREF 99 is the new standard we're switching to. Both assign a
+       north and an east coordinate, expressed in meters, to every spot in the
+       country (and some spots outside it, I bet).
+
+AUTHOR
+       Jörgen Grahn <grahn+src@snipabacken.se>.
+
+       This  is really just a wrapper script; the operation relies entirely on
+       the proj (also known as libproj, libproj0 or PROJ.4) set of tools,  and
+       information on RT90/SWEREF 99 gleaned from a multitude of sources.
+
+LICENSE
+       The Modified BSD license.
+
+For more details, see the man page from which this text
+was extracted.
