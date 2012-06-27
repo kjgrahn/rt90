@@ -21,6 +21,8 @@ clean:
 	$(RM) rt90.1.{ps,pdf}
 	$(RM) Makefile.bak
 
+CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
+
 .PHONY: check checkv
 check: 
 checkv: 
