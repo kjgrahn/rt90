@@ -24,13 +24,37 @@ clean:
 CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
 
 .PHONY: check checkv
-check: 
-checkv: 
+check: tests
+	./tests
+checkv: tests
+	valgrind -q ./tests -v
+
+test.cc: libtest.a
+	testicle -o$@ $^
+
+tests: test.o librt90.a libtest.a
+	$(CXX) -o $@ test.o -L. -ltest -lrt90 -lm
+
+librt90.a: planar.o
+librt90.a: transform.o
+	$(AR) -r $@ $^
+
+libtest.a: test_lmv.o
+	$(AR) -r $@ $^
 
 %.1.ps : %.1
 	groff -man -ma4 $< >$@
 %.1.pdf : %.1.ps
 	ps2pdf $< >$@
 
+depend:
+	makedepend -- $(CFLAGS) -- -Y *.cc
+
 love:
 	@echo "not war?"
+
+# DO NOT DELETE
+
+planar.o: planar.h
+test_lmv.o: planar.h transform.h
+transform.o: transform.h planar.h

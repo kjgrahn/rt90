@@ -11,9 +11,8 @@
 #include <testicle.h>
 
 #include "planar.h"
+#include "transform.h"
 
-void assert_from(const Planar& a, const Planar& b);
-void assert_to(const Planar& a, const Planar& b);
 
 namespace {
     namespace rt90 {
@@ -27,6 +26,32 @@ namespace {
 	const Planar B(7046077.605, 562140.337);
 	const Planar C(6669189.376, 486557.055);
 	const Planar D(6246136.458, 430374.835);
+    }
+}
+
+
+namespace {
+
+    /**
+     * Assert that 'rt90' transforms to 'ref', with an error of at
+     * most 0.1m.
+     *
+     * 0.1m is small enough to show dramatic fuckups, small enough not
+     * to matter for my purposes ... and large enough not to trigger
+     * on the ~1mm errors I've seen when playing with cs2cs(1)
+     */
+    void assert_from(const Planar& rt90, const Planar& ref)
+    {
+	Forward transform;
+	const Planar p = transform(rt90);
+	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
+    }
+
+    void assert_to(const Planar& sweref99, const Planar& ref)
+    {
+	Backward transform;
+	const Planar p = transform(sweref99);
+	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
     }
 }
 
