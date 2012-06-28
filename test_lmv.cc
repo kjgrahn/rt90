@@ -42,15 +42,15 @@ namespace {
      */
     void assert_from(const Planar& rt90, const Planar& ref)
     {
-	Forward transform;
-	const Planar p = transform(rt90);
+	Transform transform;
+	const Planar p = transform.forward(rt90);
 	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
     }
 
     void assert_to(const Planar& sweref99, const Planar& ref)
     {
-	Backward transform;
-	const Planar p = transform(sweref99);
+	Transform transform;
+	const Planar p = transform.backward(sweref99);
 	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
     }
 }

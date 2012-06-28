@@ -6,41 +6,58 @@
 #include "transform.h"
 
 #include <proj_api.h>
+#include <cassert>
+
+
+Transform::Transform()
+    : a(pj_init_plus("+ellps=WGS84 "
+		     "+proj=tmerc "
+		     "+lat_0=0 "
+		     "+lon_0=15.80628452944445 "
+		     "+k=1.00000561024 "
+		     "+x_0=1500064.274 "
+		     "+y_0=-667.711")),
+      b(pj_init_plus("+init=epsg:3006"))
+{
+    assert(a);
+    assert(b);
+}
+
+
+Transform::~Transform()
+{
+    pj_free(a);
+    pj_free(b);
+}
+
 
 namespace {
 
-    projUV cvt(const Planar& p)
+    /**
+     * Helper function, to cope with the weird pj_transform()
+     * interface.
+     */
+    Planar transform(projPJ src, projPJ dst, Planar coord)
     {
-	projUV uv;
-	uv.u = p.x;
-	uv.v = p.y;
-	return uv;
-    }
-
-    Planar cvt(const projUV& uv)
-    {
-	Planar p;
-	p.x = uv.u;
-	p.y = uv.v;
-	return p;
+	double x = coord.x;
+	double y = coord.y;
+	double z = 0;
+	int rc = pj_transform(src, dst,
+			      1, 1,
+			      &y, &x, &z);
+	assert(!rc);
+	return Planar(x, y);
     }
 }
 
-Forward::Forward()
-{
-    static char* argv[] = {"ellps=WGS84",
-			   "proj=tmerc",
-			   "lat_0=0",
-			   "lon_0=15.80628452944445",
-			   "k=1.00000561024",
-			   "x_0=1500064.274",
-			   "y_0=-667.711"};
 
-    pj = pj_init(sizeof argv / sizeof *argv, argv);
+Planar Transform::forward(const Planar& p) const
+{
+    return transform(a, b, p);
 }
 
-Planar Forward::operator() (const Planar& p) const
+
+Planar Transform::backward(const Planar& p) const
 {
-    Planar q = cvt(pj_fwd(cvt(p), pj));
-    return q;
+    return transform(b, a, p);
 }

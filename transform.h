@@ -10,26 +10,23 @@
 
 
 /**
- * Conversion RT90 2.5 gon V --> SWEREF 99 TM.
+ * Conversion RT90 2.5 gon V --> SWEREF 99 TM ("forward")
+ * and the reverse direction.
  */
-class Forward {
+class Transform {
 public:
-    Forward();
-    Planar operator() (const Planar& p) const;
+    Transform();
+    ~Transform();
+
+    Planar forward(const Planar& p) const;
+    Planar backward(const Planar& p) const;
+
 private:
-    Forward(const Forward&);
-    Forward& operator= (const Forward&);
+    Transform(const Transform&);
+    Transform& operator= (const Transform&);
 
-    void *pj;
-};
-
-
-/**
- * Conversion SWEREF 99 TM --> RT90 2.5 gon V.
- */
-class Backward {
-public:
-    Planar operator() (const Planar& p) const { return p; }
+    void* a;
+    void* b;
 };
 
 #endif
