@@ -5,6 +5,14 @@
  */
 #include "planar.h"
 
+#include <iostream>
+
+std::ostream& Planar::put(std::ostream& os) const
+{
+    return os << x << ' ' << y;
+}
+
+
 /**
  * The square of the distance a--b.
  */

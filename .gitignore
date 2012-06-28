@@ -1,3 +1,7 @@
 rt90.1.p*
 rt90c
 *.o
+*.a
+Makefile.bak
+test.cc
+tests

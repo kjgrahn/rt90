@@ -14,7 +14,13 @@
  */
 class Forward {
 public:
-    Planar operator() (const Planar& p) const { return p; }
+    Forward();
+    Planar operator() (const Planar& p) const;
+private:
+    Forward(const Forward&);
+    Forward& operator= (const Forward&);
+
+    void *pj;
 };
 
 

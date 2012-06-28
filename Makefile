@@ -19,7 +19,9 @@ install: rt90
 .PHONY: clean
 clean:
 	$(RM) rt90.1.{ps,pdf}
-	$(RM) Makefile.bak
+	$(RM) *.[oa]
+	$(RM) test.cc Makefile.bak
+	$(RM) rt90 tests
 
 CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
 
@@ -33,7 +35,7 @@ test.cc: libtest.a
 	testicle -o$@ $^
 
 tests: test.o librt90.a libtest.a
-	$(CXX) -o $@ test.o -L. -ltest -lrt90 -lm
+	$(CXX) -o $@ test.o -L. -ltest -lrt90 -lproj -lm
 
 librt90.a: planar.o
 librt90.a: transform.o

@@ -15,6 +15,7 @@
  */
 class Planar {
 public:
+    Planar() : x(0), y(0) {}
     Planar(double x, double y) : x(x), y(y) {}
     std::ostream& put(std::ostream& os) const;
     double x;
