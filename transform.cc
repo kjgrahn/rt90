@@ -19,6 +19,25 @@ Transform::Transform()
 		     "+y_0=-667.711")),
       b(pj_init_plus("+init=epsg:3006"))
 {
+    /* Projection 'a' is from RT 90 2.5 gon V to SWEREF 99.  The
+     * incantation is taken from
+     * http://wiki.openstreetmap.org/wiki/Converting_to_WGS84#Sweden
+     * but the exact numbers come from
+     *
+     * EPSG=3847
+     * SWEREF99 / RT90 2.5 gon V emulation
+     *
+     * Unclear if the wiki was sloppy with the fine details, or if
+     * it's an effect of a difference between WGS84 and SWEREF99.
+     *
+     * Projection 'b' is translation SWEREF99 lat/long -> planar
+     * coordinates. And for that it seems EPSG=3006 from the libproj
+     * distribution is correct.
+     *
+     * EPSG=3006
+     * SWEREF99 TM
+     *
+     */
     assert(a);
     assert(b);
 }
@@ -45,18 +64,32 @@ namespace {
 	int rc = pj_transform(src, dst,
 			      1, 1,
 			      &y, &x, &z);
+	/* Unclear why x and y are reversed here. Probably for the
+	 * same reason you invoke cs2cs(1) with '-rs' when you use the
+	 * commandline.  I also cannot explain the zero 'z'
+	 * coordinate.
+	 *
+	 * Anyway, the point is: doing it this way makes the tests
+	 * pass.
+	 */
 	assert(!rc);
 	return Planar(x, y);
     }
 }
 
 
+/**
+ * Conversion RT90 2.5 gon V --> SWEREF 99 TM, i.e. "forward".
+ */
 Planar Transform::forward(const Planar& p) const
 {
     return transform(a, b, p);
 }
 
 
+/**
+ * Conversion SWEREF 99 TM ---> RT90 2.5 gon V.
+ */
 Planar Transform::backward(const Planar& p) const
 {
     return transform(b, a, p);
