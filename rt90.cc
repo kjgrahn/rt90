@@ -12,6 +12,7 @@
 #include <getopt.h>
 
 #include "transform.h"
+#include "lmv_ctrl.h"
 
 
 /**
@@ -43,6 +44,35 @@ enum Direction {
     FROM_RT90,
     TO_RT90
 };
+
+
+/**
+ * Perform the self-test, using LMV's four test points A--D.
+ */
+int selftest()
+{
+    int rc = 0;
+    Transform t;
+    const double limit = 0.1 * 0.1;
+
+    using lmv::lmv;
+
+    if(distance2(t.forward(lmv.rt90.A), lmv.sweref99.A) > limit) rc++;
+    if(distance2(t.forward(lmv.rt90.B), lmv.sweref99.B) > limit) rc++;
+    if(distance2(t.forward(lmv.rt90.C), lmv.sweref99.C) > limit) rc++;
+    if(distance2(t.forward(lmv.rt90.D), lmv.sweref99.D) > limit) rc++;
+
+    if(distance2(t.backward(lmv.sweref99.A), lmv.rt90.A) > limit) rc++;
+    if(distance2(t.backward(lmv.sweref99.B), lmv.rt90.B) > limit) rc++;
+    if(distance2(t.backward(lmv.sweref99.C), lmv.rt90.C) > limit) rc++;
+    if(distance2(t.backward(lmv.sweref99.D), lmv.rt90.D) > limit) rc++;
+
+    if(rc) {
+	std::cerr << "error: self-test failed\n";
+    }
+
+    return rc;
+}
 
 
 int main(int argc, char ** argv)
@@ -121,6 +151,7 @@ int main(int argc, char ** argv)
     }
 
     if(test) {
+	return selftest();
     }
     else if(argc - optind == 2) {
     }
