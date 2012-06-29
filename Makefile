@@ -39,6 +39,7 @@ tests: test.o librt90.a libtest.a
 
 librt90.a: planar.o
 librt90.a: transform.o
+librt90.a: lmv_ctrl.o
 	$(AR) -r $@ $^
 
 libtest.a: test_lmv.o
@@ -58,5 +59,5 @@ love:
 # DO NOT DELETE
 
 planar.o: planar.h
-test_lmv.o: planar.h transform.h
+test_lmv.o: planar.h transform.h lmv_ctrl.h
 transform.o: transform.h planar.h
