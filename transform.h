@@ -21,10 +21,20 @@ public:
     Planar forward(const Planar& p) const;
     Planar backward(const Planar& p) const;
 
+    static const char* pj_release();
+
 private:
     Transform(const Transform&);
     Transform& operator= (const Transform&);
 
+    /* 'a' and 'b' are really of type projPJ, but that's a typedef for
+     * void*, and I doubt libproj can change that in future revisions
+     * without breaking code.
+     *
+     * I don't want to poison all my code with proj_api.h's bizarre
+     * contents, and they didn't choose a system where a forward-
+     * declaration would have sufficed ... so I just use void*.
+     */
     void* a;
     void* b;
 };

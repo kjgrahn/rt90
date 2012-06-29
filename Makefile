@@ -9,7 +9,7 @@ SHELL=/bin/bash
 INSTALLBASE=/usr/local
 
 .PHONY: all
-all: 
+all: rt90
 
 .PHONY: install
 install: rt90
@@ -21,6 +21,7 @@ clean:
 	$(RM) rt90.1.{ps,pdf}
 	$(RM) *.[oa]
 	$(RM) test.cc Makefile.bak
+	$(RM) version.cc
 	$(RM) rt90 tests
 
 CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
@@ -37,9 +38,17 @@ test.cc: libtest.a
 tests: test.o librt90.a libtest.a
 	$(CXX) -o $@ test.o -L. -ltest -lrt90 -lproj -lm
 
+rt90: rt90.o librt90.a
+	$(CXX) -o $@ rt90.o -L. -lrt90 -lproj -lm
+
+version.cc: NEWS mkversion
+	./mkversion $$(perl -ne 'print "$$1 $$2\n" and exit \
+	if /^(\S+) (\S+) (\S+):$$/' NEWS) $@
+
 librt90.a: planar.o
 librt90.a: transform.o
 librt90.a: lmv_ctrl.o
+librt90.a: version.o
 	$(AR) -r $@ $^
 
 libtest.a: test_lmv.o

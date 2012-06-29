@@ -94,3 +94,9 @@ Planar Transform::backward(const Planar& p) const
 {
     return transform(b, a, p);
 }
+
+
+const char* Transform::pj_release()
+{
+    return pj_get_release();
+}
