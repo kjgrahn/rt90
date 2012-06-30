@@ -7,6 +7,8 @@
 #define RT90_COORDINATE_H
 
 #include <iosfwd>
+#include <set>
+
 
 /**
  * A planar coordinate in RT90. Unlike Planar, suited for this
@@ -21,12 +23,38 @@ public:
     Rt90() : north(0), east(0) {}
     Rt90(unsigned north, unsigned east) : north(north), east(east) {}
     std::ostream& put(std::ostream& os) const;
-    double x;
-    double y;
+    unsigned north;
+    unsigned east;
 };
 
 
-class Sweref99;
+/**
+ * A planar coordinate in SWEREF 99, similar to class Rt90.
+ */
+class Sweref99 {
+public:
+    Sweref99() : north(0), east(0) {}
+    Sweref99(unsigned north, unsigned east) : north(north), east(east) {}
+    std::ostream& put(std::ostream& os) const;
+    unsigned north;
+    unsigned east;
+};
+
+
+/**
+ * RT90 accuracy for both input and output, i.e.  whether they
+ * should be output in 4--7 digits (1km--1m), and which number of
+ * digits should be tolerated as input.
+ */
+class Accuracy {
+public:
+    Accuracy& operator<< (unsigned n);
+    bool empty() const { return input.empty(); }
+
+private:
+    unsigned output;
+    std::set<unsigned> input;
+};
 
 
 inline

@@ -5,38 +5,14 @@
  * All rights reserved.
  */
 
-#include <set>
 #include <string>
 #include <iostream>
 
 #include <getopt.h>
 
 #include "transform.h"
+#include "coordinate.h"
 #include "lmv_ctrl.h"
-
-
-/**
- * RT90 accuracy for both input and output, i.e.  whether they
- * should be output in 4--7 digits (1km--1m), and which number of
- * digits should be tolerated.
- */
-class Accuracy {
-public:
-    Accuracy& operator<< (unsigned n);
-    bool empty() const { return input.empty(); }
-
-private:
-    unsigned output;
-    std::set<unsigned> input;
-};
-
-
-Accuracy& Accuracy::operator<< (unsigned n)
-{
-    output = n;
-    input.insert(n);
-    return *this;
-}
 
 
 enum Direction {
@@ -46,34 +22,45 @@ enum Direction {
 };
 
 
-/**
- * Perform the self-test, using LMV's four test points A--D.
- */
-int selftest()
-{
-    int rc = 0;
-    Transform t;
-    const double limit = 0.1 * 0.1;
+namespace {
 
-    using lmv::lmv;
 
-    if(distance2(t.forward(lmv.rt90.A), lmv.sweref99.A) > limit) rc++;
-    if(distance2(t.forward(lmv.rt90.B), lmv.sweref99.B) > limit) rc++;
-    if(distance2(t.forward(lmv.rt90.C), lmv.sweref99.C) > limit) rc++;
-    if(distance2(t.forward(lmv.rt90.D), lmv.sweref99.D) > limit) rc++;
-
-    if(distance2(t.backward(lmv.sweref99.A), lmv.rt90.A) > limit) rc++;
-    if(distance2(t.backward(lmv.sweref99.B), lmv.rt90.B) > limit) rc++;
-    if(distance2(t.backward(lmv.sweref99.C), lmv.rt90.C) > limit) rc++;
-    if(distance2(t.backward(lmv.sweref99.D), lmv.rt90.D) > limit) rc++;
-
-    if(rc) {
-	std::cerr << "error: self-test failed\n";
+    int convert(const Direction direction,
+		const Accuracy& acc,
+		const char* const x,
+		const char* const y)
+    {
     }
 
-    return rc;
-}
 
+    /**
+     * Perform the self-test, using LMV's four test points A--D.
+     */
+    int selftest()
+    {
+	int rc = 0;
+	Transform t;
+	const double limit = 0.1 * 0.1;
+
+	using lmv::lmv;
+
+	if(distance2(t.forward(lmv.rt90.A), lmv.sweref99.A) > limit) rc++;
+	if(distance2(t.forward(lmv.rt90.B), lmv.sweref99.B) > limit) rc++;
+	if(distance2(t.forward(lmv.rt90.C), lmv.sweref99.C) > limit) rc++;
+	if(distance2(t.forward(lmv.rt90.D), lmv.sweref99.D) > limit) rc++;
+
+	if(distance2(t.backward(lmv.sweref99.A), lmv.rt90.A) > limit) rc++;
+	if(distance2(t.backward(lmv.sweref99.B), lmv.rt90.B) > limit) rc++;
+	if(distance2(t.backward(lmv.sweref99.C), lmv.rt90.C) > limit) rc++;
+	if(distance2(t.backward(lmv.sweref99.D), lmv.rt90.D) > limit) rc++;
+
+	if(rc) {
+	    std::cerr << "error: self-test failed\n";
+	}
+
+	return rc;
+    }
+}
 
 int main(int argc, char ** argv)
 {
@@ -154,8 +141,12 @@ int main(int argc, char ** argv)
 	return selftest();
     }
     else if(argc - optind == 2) {
+	return convert(direction, accuracy,
+		       argv[optind], argv[optind+1]);
     }
     else if(argc - optind == 0) {
+	// XXX
+	return 1;
     }
     else {
 	std::cerr << "error: argyment is not a coordinate\n";

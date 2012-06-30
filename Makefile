@@ -47,6 +47,7 @@ version.cc: NEWS mkversion
 
 librt90.a: planar.o
 librt90.a: transform.o
+librt90.a: coordinate.o
 librt90.a: lmv_ctrl.o
 librt90.a: version.o
 	$(AR) -r $@ $^
