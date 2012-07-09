@@ -13,13 +13,7 @@
 #include "transform.h"
 #include "coordinate.h"
 #include "lmv_ctrl.h"
-
-
-enum Direction {
-    BOTH_DIRECTIONS,
-    FROM_RT90,
-    TO_RT90
-};
+#include "direction.h"
 
 
 namespace {
@@ -29,6 +23,13 @@ namespace {
 		const Accuracy& acc,
 		const char* const x,
 		const char* const y)
+    {
+    }
+
+
+    int convert(const Direction direction,
+		const Accuracy& acc,
+		std::istream& is)
     {
     }
 
@@ -145,8 +146,8 @@ int main(int argc, char ** argv)
 		       argv[optind], argv[optind+1]);
     }
     else if(argc - optind == 0) {
-	// XXX
-	return 1;
+	return convert(direction, accuracy,
+		       std::cin);
     }
     else {
 	std::cerr << "error: argyment is not a coordinate\n";

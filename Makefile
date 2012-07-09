@@ -68,6 +68,9 @@ love:
 
 # DO NOT DELETE
 
+coordinate.o: coordinate.h
+lmv_ctrl.o: lmv_ctrl.h planar.h
 planar.o: planar.h
+rt90.o: transform.h planar.h coordinate.h lmv_ctrl.h direction.h
 test_lmv.o: planar.h transform.h lmv_ctrl.h
 transform.o: transform.h planar.h
