@@ -5,10 +5,11 @@
 .
 .ds rt90 \s-1RT90\s0
 .ds sweref99 \s-1SWEREF\ 99\s0
+.hw irre-le-vant
 .
 .
 .
-.TH rt90 1 "JUN 2012" "RT90" "User Manuals"
+.TH rt90 1 "JUL 2012" "RT90" "User Manuals"
 .
 .SH "NAME"
 rt90 \- coordinate conversion between RT90 and SWEREF99
@@ -123,8 +124,8 @@ Ordering is important:
 .B \-67
 and
 .B \-76
-means the same thing for \*[rt90] input,
-but for \*[rt90]
+means the same thing for input,
+but for
 .IR output ,
 the latter asks for 6-digit output.
 .BP
@@ -136,7 +137,7 @@ accept 100m resolution or better; output in full 1m resolution.
 Self-test, using the four reference points A\-D published by
 .IR Lantm\(:ateriet .
 If the deviation is more than 0.1m for either of these,
-in either direction, print an error message.
+in either translation direction, print an error message.
 .
 .
 .SH "EXIT STATUS"
@@ -147,12 +148,14 @@ Also non-zero if
 fails.
 .
 .
+.ig
 .SH "FILES"
 None.
 .
 .
 .SH "ENVIRONMENT"
 None.
+..
 .
 .
 .SH "BUGS"
@@ -178,7 +181,7 @@ If I understand correctly, these tend to use
 rather than \*[sweref99].
 I also understand that the difference between these two is irrelevant
 to most people \-
-but if it isn't irrelevant to
+but if it is relevant to
 .IR you ,
 .B rt90
 is of no use.
@@ -198,12 +201,13 @@ and the unit tests supplied with the source code.
 J\(:orgen Grahn
 .IR \[fo]grahn+src@snipabacken.se\[fc] .
 .PP
-This is really just a wrapper script; the operation
+The operation of
+.B rt90
 relies entirely on
 .BR libproj ,
-also known as the
-.B \s-1PROJ.4\s0
-API, and information on \*[rt90]/\*[sweref99] gleaned from
+also known as
+.BR \s-1PROJ.4\s0 ,
+and information on \*[rt90]/\:\*[sweref99] gleaned from
 a multitude of sources.
 .
 .

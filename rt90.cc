@@ -7,6 +7,8 @@
 
 #include <string>
 #include <iostream>
+#include <cstring>
+#include <cerrno>
 
 #include <getopt.h>
 
@@ -18,12 +20,12 @@
 
 namespace {
 
-
     int convert(const Direction direction,
 		const Accuracy& acc,
 		const char* const x,
 		const char* const y)
     {
+	return 0;
     }
 
 
@@ -31,6 +33,18 @@ namespace {
 		const Accuracy& acc,
 		std::istream& is)
     {
+	std::string s;
+	while(getline(is, s)) {
+	    std::cout << s << '\n';
+	}
+
+	if(!is.eof()) {
+	    std::cerr << "read error: "
+		      << std::strerror(errno) << '\n';
+	    return 1;
+	}
+
+	return 0;
     }
 
 
@@ -62,6 +76,7 @@ namespace {
 	return rc;
     }
 }
+
 
 int main(int argc, char ** argv)
 {
