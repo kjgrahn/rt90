@@ -13,7 +13,7 @@
 /**
  * A planar coordinate in RT90. Unlike Planar, suited for this
  * particular application rather than libproj's interface:
- * - 1 m resolution
+ * - 1 m resolution (accuracy not remembered)
  * - an explicit 'invalid' value
  * - sanity checks
  * - conversion to/from various string forms
@@ -22,7 +22,7 @@ class Rt90 {
 public:
     Rt90() : north(0), east(0) {}
     Rt90(unsigned north, unsigned east) : north(north), east(east) {}
-    std::ostream& put(std::ostream& os) const;
+    std::ostream& put(std::ostream& os, unsigned accuracy = 7) const;
     unsigned north;
     unsigned east;
 };
@@ -51,9 +51,14 @@ public:
     Accuracy& operator<< (unsigned n);
     bool empty() const { return input.empty(); }
 
+    bool tolerated(unsigned n) const;
+    unsigned format(unsigned n) const;
+
 private:
     unsigned output;
     std::set<unsigned> input;
+
+    bool contains(unsigned n) const;
 };
 
 
