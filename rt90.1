@@ -5,10 +5,11 @@
 .
 .ds rt90 \s-1RT90\s0
 .ds sweref99 \s-1SWEREF\ 99\s0
+.hw irre-le-vant
 .
 .
 .
-.TH rt90 1 "JUN 2012" "RT90" "User Manuals"
+.TH rt90 1 "JUL 2012" "RT90" "User Manuals"
 .
 .SH "NAME"
 rt90 \- coordinate conversion between RT90 and SWEREF99
@@ -51,7 +52,7 @@ Both assign a north and an east coordinate,
 expressed in meters,
 to every spot in the country (and some spots
 .I outside
-it, I bet).
+it, I'm sure).
 .
 .
 .SS "Coordinate format"
@@ -74,9 +75,9 @@ There are also shorter forms with 10\ m, 100\ m and 1\ km resolution:
 \s-264\s05211\ \s-213\s06804,
 \s-264\s0521\ \s-213\s0680,
 \s-264\s052\ \s-213\s068.
-Many tools today seem to only accept the full 7-digit format,
+Much software today seem to only accept the full 7-digit format,
 but older data is often not in 1m resolution. Some sources
-use different resolutions to indicate the actual accuracy.
+also use different resolutions to indicate the actual accuracy.
 .PP
 No matter what, a \*[rt90] coordinate cannot be mistaken for a \*[sweref99] one;
 the latter always uses 7+6 digits and the former never does.
@@ -118,31 +119,43 @@ When translating
 In this case, several of them may be given;
 .B \-67
 will accept six- or seven-digit \*[rt90] coordinates.
+.BP
+Ordering is important:
+.B \-67
+and
+.B \-76
+means the same thing for input,
+but for
+.IR output ,
+the latter asks for 6-digit output.
+.BP
+If you don't supply these, the default is
+.BR \-567 :
+accept 100m resolution or better; output in full 1m resolution.
 .
 .BP --test
 Self-test, using the four reference points A\-D published by
 .IR Lantm\(:ateriet .
-Use it to build confidence if you don't trust this tool
-(I wouldn't, without this feature).
-.BP
-The most likely reason for a failure is that
-.BR cs2cs (1)
-is not in your path.
+If the deviation is more than 0.1m for either of these,
+in either translation direction, print an error message.
 .
 .
 .SH "EXIT STATUS"
 Non-zero if the transformation clearly failed (input or would-be output doesn't
-have the correct number of digits).
+have the correct number of digits, or is widely out of range).
+Also non-zero if
+.B --test
+fails.
 .
 .
+.ig
 .SH "FILES"
 None.
 .
 .
 .SH "ENVIRONMENT"
-Nothing special, except for whatever the underlying
-.BR cs2cs (1)
-tool may use.
+None.
+..
 .
 .
 .SH "BUGS"
@@ -150,6 +163,22 @@ tool may use.
 Coordinates with decimal places (sub-meter resolution) are not accepted,
 although the quality of the underlying transformations seems to
 make that meaningful.
+.
+.PP
+There are countless non-standard variants on the syntax of a
+RT90 coordinate.
+.B rt90
+only supports whitespace-separated numbers, as documented on the
+topographical maps. I don't want to
+help promulgate bastardized notations such as these:
+.IP
+.nf
+X=6452109,\ Y=1368036
+X:\ 6452109,\ Y:\ 1368036
+N=6452109,\ E=1368036
+6452109,\ 1368036
+6452109/1368036
+.fi
 .
 .PP
 There are variations on both \*[rt90] and \*[sweref99] other than
@@ -162,19 +191,13 @@ I hope they are rarely relevant in situations where you'd want to use
 this tool.
 .
 .PP
-.B rt90
-works by invoking
-.BR cs2cs (1)
-once per coordinate. This is safe, but inefficient.
-.
-.PP
 I don't own a GPS receiver.
 If I understand correctly, these tend to use
 .B \s-1WGS84\s0
 rather than \*[sweref99].
 I also understand that the difference between these two is irrelevant
 to most people \-
-but if it isn't irrelevant to
+but if it is relevant to
 .IR you ,
 .B rt90
 is of no use.
@@ -185,7 +208,8 @@ translate my coordinates.
 The underlying tools and concepts are not easy to understand and
 handle correctly, and my only indication that I haven't messed up
 completely is the output from
-.BR --test .
+.BR --test ,
+and the unit tests supplied with the source code.
 .
 .
 .SH "AUTHOR"
@@ -193,15 +217,13 @@ completely is the output from
 J\(:orgen Grahn
 .IR \[fo]grahn+src@snipabacken.se\[fc] .
 .PP
-This is really just a wrapper script; the operation
-relies entirely on the
-.B proj
-(also known as
+The operation of
+.B rt90
+relies entirely on
 .BR libproj ,
-.B libproj0
-or
-.BR \s-1PROJ.4\s0 )
-set of tools, and information on \*[rt90]/\*[sweref99] gleaned from
+also known as
+.BR \s-1PROJ.4\s0 ,
+and information on \*[rt90]/\:\*[sweref99] gleaned from
 a multitude of sources.
 .
 .

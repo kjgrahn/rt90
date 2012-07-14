@@ -1,2 +1,9 @@
 rt90.1.p*
-rt90c
+rt90
+version.cc
+*.o
+*.a
+Makefile.bak
+test.cc
+tests
+TAGS
