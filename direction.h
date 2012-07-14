@@ -19,27 +19,4 @@ enum Direction {
     TO_RT90
 };
 
-
-inline bool forward_allowed(Direction d)
-{
-    switch(d) {
-    case BOTH_DIRECTIONS:
-    case FROM_RT90:
-	return true;
-    case TO_RT90:
-	return false;
-    }
-}
-
-inline bool backward_allowed(Direction d)
-{
-    switch(d) {
-    case BOTH_DIRECTIONS:
-    case TO_RT90:
-	return true;
-    case FROM_RT90:
-	return false;
-    }
-}
-
 #endif

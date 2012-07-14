@@ -15,6 +15,9 @@ std::ostream& Planar::put(std::ostream& os) const
 
 /**
  * The square of the distance a--b.
+ * Please note that since the Earth is round, this
+ * may not be a good way to calculate the distance
+ * between two places.
  */
 double distance2(const Planar& a, const Planar& b)
 {

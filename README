@@ -19,9 +19,8 @@ DESCRIPTION
 AUTHOR
        Jörgen Grahn <grahn+src@snipabacken.se>.
 
-       This  is really just a wrapper script; the operation relies entirely on
-       the proj (also known as libproj, libproj0 or PROJ.4) set of tools,  and
-       information on RT90/SWEREF 99 gleaned from a multitude of sources.
+       The operation of rt90 relies entirely on libproj, also known as PROJ.4,
+       and information on RT90/SWEREF 99 gleaned from a multitude of sources.
 
 LICENSE
        The Modified BSD license.
