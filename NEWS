@@ -2,6 +2,12 @@ rt90 - coordinate conversion between RT90 and SWEREF99
 Release history
 ------------------------------------------------------------
 
+rt90 2.0 (2012-07-14):
+
+- Reimplemented in C++ (using libproj) rather than as a Python wrapper
+  around the libproj command-line tools.  More fun, faster, and much more
+  reliable.
+
 rt90 1.0 (2012-06-26):
 
 - First release.
