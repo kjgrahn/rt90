@@ -77,7 +77,7 @@ There are also shorter forms with 10\ m, 100\ m and 1\ km resolution:
 \s-264\s052\ \s-213\s068.
 Much software today seem to only accept the full 7-digit format,
 but older data is often not in 1m resolution. Some sources
-use different resolutions to indicate the actual accuracy.
+also use different resolutions to indicate the actual accuracy.
 .PP
 No matter what, a \*[rt90] coordinate cannot be mistaken for a \*[sweref99] one;
 the latter always uses 7+6 digits and the former never does.
@@ -163,6 +163,22 @@ None.
 Coordinates with decimal places (sub-meter resolution) are not accepted,
 although the quality of the underlying transformations seems to
 make that meaningful.
+.
+.PP
+There are countless non-standard variants on the syntax of a
+RT90 coordinate.
+.B rt90
+only supports whitespace-separated numbers, as documented on the
+topographical maps. I don't want to
+help promulgate bastardized notations such as these:
+.IP
+.nf
+X=6452109,\ Y=1368036
+X:\ 6452109,\ Y:\ 1368036
+N=6452109,\ E=1368036
+6452109,\ 1368036
+6452109/1368036
+.fi
 .
 .PP
 There are variations on both \*[rt90] and \*[sweref99] other than

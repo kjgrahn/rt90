@@ -6,6 +6,7 @@
 #include <testicle.h>
 
 #include "coordinate.h"
+#include "transform.h"
 
 
 namespace accuracy {
@@ -60,5 +61,52 @@ namespace accuracy {
 	testicle::assert_eq(acc.format(5555550), 5555550);
 	testicle::assert_eq(acc.format(5555555), 5555555);
 	testicle::assert_eq(acc.format(8888888), 8888888);
+    }
+}
+
+
+namespace rt90 {
+
+    void test()
+    {
+	testicle::assert_eq(Rt90(7047738, 1522128),
+			    Rt90(7047738, 1522128));
+	testicle::assert_eq(Rt90(7047000, 1522000),
+			    Rt90(704700,  152200));
+	testicle::assert_eq(Rt90(7047000, 1522000),
+			    Rt90(70470,   15220));
+	testicle::assert_eq(Rt90(7047000, 1522000),
+			    Rt90(7047,    1522));
+    }
+
+    void test_valid()
+    {
+	testicle::assert_(Rt90(7047738, 1522128).valid());
+	testicle::assert_(Rt90(704773, 152212).valid());
+	testicle::assert_(Rt90(70477, 15221).valid());
+	testicle::assert_(Rt90(7047, 1522).valid());
+
+	testicle::assert_(!Rt90(7047738, 15221280).valid());
+	testicle::assert_(!Rt90(7047738, 152212).valid());
+	testicle::assert_(!Rt90(70477, 	 152212).valid());
+	testicle::assert_(!Rt90(70477, 	 1522).valid());
+	testicle::assert_(!Rt90(704,     1522).valid());
+
+	testicle::assert_(!Rt90(6047738, 1522128).valid());
+	testicle::assert_(!Rt90(8047738, 1522128).valid());
+    }
+}
+
+
+namespace conversion {
+
+    void test()
+    {
+	static const Rt90 a(6671665, 1441843);
+	static const Sweref99 b(6669189, 486557);
+
+	const Transform t;
+	testicle::assert_eq(convert(t, a), b);
+	testicle::assert_eq(convert(t, b), a);
     }
 }

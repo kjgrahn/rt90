@@ -20,12 +20,70 @@
 
 namespace {
 
+    void err(const char* kind)
+    {
+	std::cout << "error: bad " << kind << "coordinate\n";
+    }
+
+
     int convert(const Direction direction,
 		const Accuracy& acc,
-		const char* const x,
-		const char* const y)
+		const char* const north,
+		const char* const east)
     {
+	const Transform t;
+
+	unsigned x, y;
+	if(!parse(acc, north, east, x, y)) {
+	    err("");
+	    return 1;
+	}
+
+	if(direction==FROM_RT90) {
+	    const Rt90 rt90(x, y);
+	    if(rt90.valid()) {
+		std::cout << convert(t, rt90) << '\n';
+	    }
+	    else {
+		err("RT90 ");
+		return 1;
+	    }
+	}
+	else if(direction==TO_RT90) {
+	    const Sweref99 sw99(x, y);
+	    if(sw99.valid()) {
+		convert(t, sw99).put(std::cout, acc) << '\n';
+	    }
+	    else {
+		err("SWEREF99 ");
+		return 1;
+	    }
+	}
+	else {
+	    const Rt90 rt90(x, y);
+	    const Sweref99 sw99(x, y);
+	    if(rt90.valid()) {
+		std::cout << convert(t, rt90) << '\n';
+	    }
+	    else if(sw99.valid()) {
+		convert(t, sw99).put(std::cout, acc) << '\n';
+	    }
+	    else {
+		err("");
+		return 1;
+	    }
+	}
+
 	return 0;
+    }
+
+
+    void err(unsigned line, const char* kind,
+	     const std::string& s)
+    {
+	std::cerr << "error on line " << line
+		  << ": bad " << kind << "coordinate \""
+		  << s << "\"\n";
     }
 
 
@@ -33,18 +91,78 @@ namespace {
 		const Accuracy& acc,
 		std::istream& is)
     {
+	const Transform t;
+	unsigned line = 0;
+	int rc = 0;
+
 	std::string s;
 	while(getline(is, s)) {
-	    std::cout << s << '\n';
+
+	    /* XXX This nested mess is too messy (and kind of
+	     * duplicated above) but I saw no easy way around
+	     * that, given the need for subtleties in the diagnostics.
+	     *
+	     * Perhaps the "translate in either direction" feature is
+	     * simply a bad UI design when applied to file input.
+	     */
+	    
+	    line++;
+	    unsigned x, y;
+	    if(parse(acc, s, x, y)) {
+
+		if(direction==FROM_RT90) {
+		    const Rt90 rt90(x, y);
+		    if(rt90.valid()) {
+			std::cout << convert(t, rt90) << '\n';
+		    }
+		    else {
+			/* XXX Bug: here we'll warn about and discard
+			 * pre-existing SWEREF99 coordinates.
+			 */
+			err(line, "RT90 ", s);
+			rc = 1;
+		    }
+		}
+		else if(direction==TO_RT90) {
+		    const Sweref99 sw99(x, y);
+		    if(sw99.valid()) {
+			convert(t, sw99).put(std::cout, acc) << '\n';
+		    }
+		    else {
+			err(line, "SWEREF99 ", s);
+			rc = 1;
+		    }
+		}
+		else {
+		    const Rt90 rt90(x, y);
+		    const Sweref99 sw99(x, y);
+		    if(rt90.valid()) {
+			std::cout << convert(t, rt90) << '\n';
+		    }
+		    else if(sw99.valid()) {
+			convert(t, sw99).put(std::cout, acc) << '\n';
+		    }
+		    else {
+			err(line, "", s);
+			rc = 1;
+		    }
+		}
+	    }
+	    else {
+		/* some other text, so obviously not a coordinate
+		 * that we don't feel a need to warn
+		 */
+		std::cout << s << '\n';
+	    }
 	}
 
 	if(!is.eof()) {
 	    std::cerr << "read error: "
 		      << std::strerror(errno) << '\n';
-	    return 1;
+	    rc = 1;
 	}
 
-	return 0;
+	return rc;
     }
 
 
