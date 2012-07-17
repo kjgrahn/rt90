@@ -6,6 +6,8 @@
 #ifndef RT90_COORDINATE_H
 #define RT90_COORDINATE_H
 
+#include "direction.h"
+
 #include <iosfwd>
 #include <set>
 
@@ -74,10 +76,10 @@ Sweref99 convert(const Transform& t, const Rt90& val);
 Rt90 convert(const Transform& t, const Sweref99& val);
 
 
-bool parse(const Accuracy& accuracy,
+bool parse(const Accuracy& accuracy, bool rt90,
 	   const char* s,
 	   unsigned& north, unsigned& east);
-bool parse(const Accuracy& accuracy,
+bool parse(const Accuracy& accuracy, bool rt90,
 	   const std::string& s,
 	   unsigned& north, unsigned& east);
 bool parse(const Accuracy& accuracy,

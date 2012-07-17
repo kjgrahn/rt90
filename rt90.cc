@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cstring>
 #include <cerrno>
+#include <cassert>
 
 #include <getopt.h>
 
@@ -26,6 +27,9 @@ namespace {
     }
 
 
+    /**
+     * The "convert the coordinate on the command line" mode.
+     */
     int convert(const Direction direction,
 		const Accuracy& acc,
 		const char* const north,
@@ -87,9 +91,8 @@ namespace {
     }
 
 
-    int convert(const Direction direction,
-		const Accuracy& acc,
-		std::istream& is)
+    int convert_from(const Accuracy& acc,
+		     std::istream& is)
     {
 	const Transform t;
 	unsigned line = 0;
@@ -98,60 +101,20 @@ namespace {
 	std::string s;
 	while(getline(is, s)) {
 
-	    /* XXX This nested mess is too messy (and kind of
-	     * duplicated above) but I saw no easy way around
-	     * that, given the need for subtleties in the diagnostics.
-	     *
-	     * Perhaps the "translate in either direction" feature is
-	     * simply a bad UI design when applied to file input.
-	     */
-	    
 	    line++;
 	    unsigned x, y;
-	    if(parse(acc, s, x, y)) {
+	    if(parse(acc, true, s, x, y)) {
 
-		if(direction==FROM_RT90) {
-		    const Rt90 rt90(x, y);
-		    if(rt90.valid()) {
-			std::cout << convert(t, rt90) << '\n';
-		    }
-		    else {
-			/* XXX Bug: here we'll warn about and discard
-			 * pre-existing SWEREF99 coordinates.
-			 */
-			err(line, "RT90 ", s);
-			rc = 1;
-		    }
-		}
-		else if(direction==TO_RT90) {
-		    const Sweref99 sw99(x, y);
-		    if(sw99.valid()) {
-			convert(t, sw99).put(std::cout, acc) << '\n';
-		    }
-		    else {
-			err(line, "SWEREF99 ", s);
-			rc = 1;
-		    }
+		const Rt90 rt90(x, y);
+		if(rt90.valid()) {
+		    std::cout << convert(t, rt90) << '\n';
 		}
 		else {
-		    const Rt90 rt90(x, y);
-		    const Sweref99 sw99(x, y);
-		    if(rt90.valid()) {
-			std::cout << convert(t, rt90) << '\n';
-		    }
-		    else if(sw99.valid()) {
-			convert(t, sw99).put(std::cout, acc) << '\n';
-		    }
-		    else {
-			err(line, "", s);
-			rc = 1;
-		    }
+		    err(line, "RT90 ", s);
+		    rc = 1;
 		}
 	    }
 	    else {
-		/* some other text, so obviously not a coordinate
-		 * that we don't feel a need to warn
-		 */
 		std::cout << s << '\n';
 	    }
 	}
@@ -163,6 +126,63 @@ namespace {
 	}
 
 	return rc;
+    }
+
+
+    int convert_to(const Accuracy& acc,
+		   std::istream& is)
+    {
+	const Transform t;
+	unsigned line = 0;
+	int rc = 0;
+
+	std::string s;
+	while(getline(is, s)) {
+
+	    line++;
+	    unsigned x, y;
+	    if(parse(acc, false, s, x, y)) {
+
+		const Sweref99 sw99(x, y);
+		if(sw99.valid()) {
+		    convert(t, sw99).put(std::cout, acc) << '\n';
+		}
+		else {
+		    err(line, "SWEREF99 ", s);
+		    rc = 1;
+		}
+	    }
+	    else {
+		std::cout << s << '\n';
+	    }
+	}
+
+	if(!is.eof()) {
+	    std::cerr << "read error: "
+		      << std::strerror(errno) << '\n';
+	    rc = 1;
+	}
+
+	return rc;
+    }
+
+
+    /**
+     * The "convert stdin to stdout" mode. Because of user interface
+     * issues, the user has to choose the direction explicitly.
+     */
+    int convert(const Direction direction,
+		const Accuracy& acc,
+		std::istream& is)
+    {
+	switch(direction) {
+	case FROM_RT90:
+	    return convert_from(acc, is);
+	case TO_RT90:
+	    return convert_to(acc, is);
+	default:
+	    assert(0);
+	}
     }
 
 
@@ -202,9 +222,9 @@ int main(int argc, char ** argv)
 
     const string prog = argv[0] ? argv[0] : "proj";
     const string usage = string("usage: ")
-	+ prog + " [-4567] [north east]\n"
+	+ prog + " [-4567] [--from|--to] north east\n"
 	+ "       "
-	+ prog + " [--from | --to] [-4567] [north east]\n"
+	+ prog + " [-4567] --from|--to < coordinates\n"
 	+ "       "
 	+ prog + " --test\n"
 	+ "       "
@@ -279,6 +299,11 @@ int main(int argc, char ** argv)
 		       argv[optind], argv[optind+1]);
     }
     else if(argc - optind == 0) {
+	if(direction==BOTH_DIRECTIONS) {
+	    std::cerr << "error: mandatory argument missing\n"
+		      << usage << '\n';
+	    return 1;
+	}
 	return convert(direction, accuracy,
 		       std::cin);
     }

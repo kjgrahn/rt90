@@ -17,16 +17,17 @@ rt90 \- coordinate conversion between RT90 and SWEREF99
 .SH "SYNOPSIS"
 .
 .B rt90
-.RI [ \-N ]
-.RI [ "north east" ]
+.RB [ \-4567 ]
+.RB [ --from | --to ]
+.I north
+.I east
 .
 .br
 .B rt90
-.RB [ --from
-|
-.BR --to ]
-.RI [ \-N ]
-.RI [ "north east" ]
+.RB [ \-4567 ]
+.BR --from | --to
+<
+.I coordinates
 .
 .br
 .B rt90
@@ -58,6 +59,7 @@ it, I'm sure).
 .
 .
 .SS "Coordinate format"
+.
 Coordinates may be given on the command line, or as standard input.
 .BR "On the command line" ,
 it's just two numerical arguments \- north and east.
@@ -88,14 +90,14 @@ the latter always uses 7+6 digits and the former never does.
 .SH "OPTIONS"
 .
 .BP --from
-Translate only
+Translate
 .I "from \*[rt90]"
 to \*[sweref99].
-Only coordinates which are likely to be correct \*[rt90] coordinates
+Only coordinates which seem likely to be correct \*[rt90] coordinates
 are translated.
 .
 .BP --to,\ --back
-Translate only
+Translate
 from \*[sweref99]
 .IR "to \*[rt90]" .
 Only coordinates which seem like correct \*[sweref99] coordinates
@@ -108,7 +110,10 @@ is supposed to be easier to remember; you're going
 to an older system.
 .
 .PP
-Without either of these options, coordinates which look like \*[rt90]
+One of these is mandatory when translating from standard input.
+When translating a coordinate supplied on the command line,
+they are optional \-
+without them, coordinates which look like \*[rt90]
 are translated to \*[sweref99], and vice versa.
 .
 .BP \-4,\ \-5,\ \-6,\ \-7
@@ -148,16 +153,6 @@ have the correct number of digits, or is widely out of range).
 Also non-zero if
 .B --test
 fails.
-.
-.
-.ig
-.SH "FILES"
-None.
-.
-.
-.SH "ENVIRONMENT"
-None.
-..
 .
 .
 .SH "BUGS"

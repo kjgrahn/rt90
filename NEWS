@@ -2,6 +2,10 @@ rt90 - coordinate conversion between RT90 and SWEREF99
 Release history
 ------------------------------------------------------------
 
+- User interface change. For converting standard input, you now have
+  to specify if you want to convert from RT90 or to RT90. Both at the
+  same time turned out to be too messy, and potentially dangerous.
+
 rt90 2.0 (2012-07-14):
 
 - Reimplemented in C++ (using libproj) rather than as a Python wrapper

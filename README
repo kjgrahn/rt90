@@ -2,8 +2,8 @@ NAME
        rt90 - coordinate conversion between RT90 and SWEREF99
 
 SYNOPSIS
-       rt90 [-N] [north east]
-       rt90 [--from | --to] [-N] [north east]
+       rt90 [-4567] [--from|--to] north east
+       rt90 [-4567] --from|--to < coordinates
        rt90 --test
        rt90 --version
        rt90 --help

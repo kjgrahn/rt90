@@ -196,10 +196,13 @@ Rt90 convert(const Transform& t, const Sweref99& val)
  * decimal numbers. Return true iff these can conceivably be a RT90 or
  * SWEREF99 coordinate, i.e. consist of the right number of digits.
  *
+ * You explicitly (through 'rt90') ask for either kind of coordinate.
+ *
  * Sanity checks on the actual numbers aren't done here; that's the
  * job of classes Rt90/Sweref99.
  */
 bool parse(const Accuracy& accuracy,
+	   bool rt90,
 	   const char* s,
 	   unsigned& north, unsigned& east)
 {
@@ -232,9 +235,9 @@ bool parse(const Accuracy& accuracy,
     north = std::strtoul(a, 0, 10);
     east = std::strtoul(b, 0, 10);
 
-    if(digits_of(north)==7 && digits_of(east)==6) return true;
+    if(digits_of(north)==7 && digits_of(east)==6) return !rt90;
 
-    return digits_of(north)==digits_of(east) &&
+    return digits_of(north)==digits_of(east) && rt90 &&
 	accuracy.tolerated(north);
 }
 
@@ -243,19 +246,22 @@ bool parse(const Accuracy& accuracy,
  * As parse(... const char* ...).
  */
 bool parse(const Accuracy& accuracy,
+	   bool rt90,
 	   const std::string& s,
 	   unsigned& north, unsigned& east)
 {
-    return parse(accuracy, s.c_str(), north, east);
+    return parse(accuracy, rt90, s.c_str(), north, east);
 }
 
 
 /**
  * As the one-string parse(), with "$a $b" as the string.
  *
- * We're also more sloppy with the format checking, since this is for
+ * We're more sloppy with the format checking, since this is for
  * parsing numbers given explicitly on the command line, not random
  * data in some file.
+ *
+ * Also, this one swallows both RT90 and SWEREF 99.
  */
 bool parse(const Accuracy& accuracy,
 	   const char* a, const char* b, 

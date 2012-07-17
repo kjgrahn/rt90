@@ -11,13 +11,14 @@
 namespace parser {
 
     void assert_parses(const Accuracy& acc,
+		       bool rt90,
 		       const char* s,
 		       unsigned n,
 		       unsigned e)
     {
 	unsigned north;
 	unsigned east;
-	bool ok = parse(acc, s, north, east);
+	bool ok = parse(acc, rt90, s, north, east);
 	testicle::assert_(ok);
 	testicle::assert_eq(n, north);
 	testicle::assert_eq(e, east);
@@ -28,7 +29,7 @@ namespace parser {
     {
 	unsigned north;
 	unsigned east;
-	bool ok = parse(acc, s, north, east);
+	bool ok = parse(acc, true, s, north, east) || parse(acc, false, s, north, east);
 	testicle::assert_(!ok);
     }
 
@@ -37,19 +38,19 @@ namespace parser {
 	Accuracy acc;
 	acc << 5 << 7;
 
-	assert_parses(acc,
+	assert_parses(acc, true,
 		      "10000 10000",
 		      10000, 10000);
-	assert_parses(acc,
+	assert_parses(acc, true,
 		      "99999 99999",
 		      99999, 99999);
-	assert_parses(acc,
+	assert_parses(acc, true,
 		      " 99999   99999 \n",
 		      99999, 99999);
-	assert_parses(acc,
+	assert_parses(acc, true,
 		      "9999999 9999999",
 		      9999999, 9999999);
-	assert_parses(acc,
+	assert_parses(acc, false,
 		      "9999999 999999",
 		      9999999, 999999);
     }

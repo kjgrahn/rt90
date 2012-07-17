@@ -75,11 +75,11 @@ love:
 
 # DO NOT DELETE
 
-coordinate.o: coordinate.h planar.h transform.h
+coordinate.o: coordinate.h direction.h planar.h transform.h
 lmv_ctrl.o: lmv_ctrl.h planar.h
 planar.o: planar.h
-rt90.o: transform.h planar.h coordinate.h lmv_ctrl.h direction.h
-test_coord.o: coordinate.h transform.h planar.h
+rt90.o: transform.h planar.h coordinate.h direction.h lmv_ctrl.h
+test_coord.o: coordinate.h direction.h transform.h planar.h
 test_lmv.o: planar.h transform.h lmv_ctrl.h
-test_parser.o: coordinate.h
+test_parser.o: coordinate.h direction.h
 transform.o: transform.h planar.h
