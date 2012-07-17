@@ -2,6 +2,10 @@ rt90 - coordinate conversion between RT90 and SWEREF99
 Release history
 ------------------------------------------------------------
 
+- Copy the EPSG=3006 parameters from the libproj data files, so these
+  don't have to be installed for rt90(1) to work.  Probably this
+  increases performance too.
+
 - User interface change. For converting standard input, you now have
   to specify if you want to convert from RT90 or to RT90. Both at the
   same time turned out to be too messy, and potentially dangerous.

@@ -17,7 +17,12 @@ Transform::Transform()
 		     "+k=1.00000561024 "
 		     "+x_0=1500064.274 "
 		     "+y_0=-667.711")),
-      b(pj_init_plus("+init=epsg:3006"))
+      b(pj_init_plus("+proj=utm "
+		     "+zone=33 "
+		     "+ellps=GRS80 "
+		     "+towgs84=0,0,0,0,0,0,0 "
+		     "+units=m "
+		     "+no_defs"))
 {
     /* Projection 'a' is from RT 90 2.5 gon V to SWEREF 99.  The
      * incantation is taken from
