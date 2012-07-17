@@ -2,6 +2,8 @@ rt90 - coordinate conversion between RT90 and SWEREF99
 Release history
 ------------------------------------------------------------
 
+rt90 2.1 (2012-07-18):
+
 - Copy the EPSG=3006 parameters from the libproj data files, so these
   don't have to be installed for rt90(1) to work.  Probably this
   increases performance too.
