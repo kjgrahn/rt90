@@ -48,6 +48,7 @@ version.cc: NEWS mkversion
 librt90.a: planar.o
 librt90.a: transform.o
 librt90.a: coordinate.o
+librt90.a: coord_transform.o
 librt90.a: lmv_ctrl.o
 librt90.a: version.o
 	$(AR) -r $@ $^
@@ -75,7 +76,8 @@ love:
 
 # DO NOT DELETE
 
-coordinate.o: coordinate.h planar.h transform.h
+coordinate.o: coordinate.h
+coord_transform.o: coordinate.h planar.h transform.h
 lmv_ctrl.o: lmv_ctrl.h planar.h
 planar.o: planar.h
 rt90.o: transform.h planar.h coordinate.h lmv_ctrl.h direction.h
