@@ -6,8 +6,6 @@
 #ifndef RT90_COORDINATE_H
 #define RT90_COORDINATE_H
 
-#include "direction.h"
-
 #include <iosfwd>
 #include <set>
 
