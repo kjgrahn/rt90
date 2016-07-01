@@ -14,11 +14,11 @@
 namespace {
 
     /**
-     * True iff a < b < c.
+     * True iff b is in [a..c).
      */
     bool in_range(unsigned a, unsigned b, unsigned c)
     {
-	return a < b && b < c;
+	return a <= b && b < c;
     }
 
     /**
