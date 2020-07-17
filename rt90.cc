@@ -232,7 +232,7 @@ int main(int argc, char ** argv)
 	+ "       "
 	+ prog + " --help";
 
-    const char optstring[] = "+4567";
+    const char optstring[] = "4567";
     struct option long_options[] = {
 	{"from",    0, 0, 'f'},
 	{"to",      0, 0, 't'},
