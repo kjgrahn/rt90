@@ -193,7 +193,7 @@ namespace {
     {
 	int rc = 0;
 	Transform t;
-	const double limit = 0.1 * 0.1;
+	const double limit = 0.2 * 0.2;
 
 	using lmv::lmv;
 
@@ -246,6 +246,8 @@ int main(int argc, char ** argv)
     std::cin.sync_with_stdio(false);
     std::cout.sync_with_stdio(false);
 
+    Transform::morons();
+
     Accuracy accuracy;
     Direction direction = BOTH_DIRECTIONS;
     bool test = false;
@@ -273,7 +275,7 @@ int main(int argc, char ** argv)
 	case 'v':
 	    std::cout << prog << " version 2.2\n"
 		      << "Copyright (c) 2012, 2020 Jörgen Grahn.\n"
-		      << "Using PROJ.4 " << Transform::pj_release() << ".\n";
+		      << "Using PROJ " << Transform::pj_release() << ".\n";
 	    return 0;
 	    break;
 	case ':':

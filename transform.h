@@ -8,6 +8,9 @@
 
 #include "planar.h"
 
+#include <string>
+
+struct PJconsts;
 
 /**
  * Conversion RT90 2.5 gon V --> SWEREF 99 TM ("forward")
@@ -21,22 +24,19 @@ public:
     Planar forward(const Planar& p) const;
     Planar backward(const Planar& p) const;
 
-    static const char* pj_release();
+    static std::string pj_release();
+    static void morons();
 
 private:
     Transform(const Transform&);
     Transform& operator= (const Transform&);
 
-    /* 'a' and 'b' are really of type projPJ, but that's a typedef for
-     * void*, and I doubt libproj can change that in future revisions
-     * without breaking code.
-     *
-     * I don't want to poison all my code with proj_api.h's bizarre
-     * contents, and they didn't choose a system where a forward-
-     * declaration would have sufficed ... so I just use void*.
+    /* The official post-PROJ.4 API has PJ* rather than PJConsts*, but
+     * I don't see how I can use the PJ typedef can be forward-
+     * declared. So I use the internal type name and blame them when
+     * that breaks. They had their chance to fix this.
      */
-    void* a;
-    void* b;
+    PJconsts* const pj;
 };
 
 #endif

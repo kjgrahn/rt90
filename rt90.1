@@ -9,8 +9,7 @@
 .
 .
 .
-.TH rt90 1 "OCT 2020" "RT90" "User Manuals"
-.
+.TH rt90 1 "AUG 2021" "RT90" "User Manuals"
 .
 .SH "NAME"
 rt90 \- coordinate conversion between RT90 and SWEREF99
@@ -146,7 +145,7 @@ accept 100m resolution or better; output in full 1m resolution.
 .BP --test
 Self-test, using the four reference points A\-D published by
 .IR Lantm\(:ateriet .
-If the deviation is more than 0.1m for either of these,
+If the deviation is more than 0.2m for either of these,
 in either translation direction, print an error message.
 .
 .
@@ -161,8 +160,10 @@ fails.
 .SH "BUGS"
 .
 Coordinates with decimal places (sub-meter resolution) are not accepted,
-although the quality of the underlying transformations seems to
-make that meaningful.
+although the quality of the underlying transformations may
+make that at least
+.I partly
+meaningful.
 .
 .PP
 There are countless non-standard variants on the syntax of a
@@ -222,6 +223,8 @@ The operation of
 relies entirely on
 .BR libproj ,
 also known as
+.B \s-1PROJ\s0
+or
 .BR \s-1PROJ.4\s0 ,
 and information on \*[rt90]/\:\*[sweref99] gleaned from
 a multitude of sources.
@@ -237,6 +240,6 @@ The Modified BSD license.
 .BR cs2cs (1),
 .BR proj (1),
 .br
-.RI \[fo] http://www.remotesensing.org/proj \[fc],
+.RI \[fo] http://proj.org \[fc],
 .br
 .RI \[fo] http://www.lantmateriet.se \[fc].

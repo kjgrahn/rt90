@@ -5,81 +5,52 @@
  */
 #include "transform.h"
 
-#define ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
-#include <proj_api.h>
+#include <proj.h>
 #include <cassert>
+
+void Transform::morons()
+{
+    proj_context_use_proj4_init_rules(nullptr, true);
+}
 
 
 Transform::Transform()
-    : a(pj_init_plus("+ellps=WGS84 "
-		     "+proj=tmerc "
-		     "+lat_0=0 "
-		     "+lon_0=15.80628452944445 "
-		     "+k=1.00000561024 "
-		     "+x_0=1500064.274 "
-		     "+y_0=-667.711")),
-      b(pj_init_plus("+proj=utm "
-		     "+zone=33 "
-		     "+ellps=GRS80 "
-		     "+towgs84=0,0,0,0,0,0,0 "
-		     "+units=m "
-		     "+no_defs"))
+    : pj(proj_create_crs_to_crs(nullptr,
+				"+init=epsg:3021",
+				"+init=epsg:3006",
+				nullptr))
 {
-    /* Projection 'a' is from RT 90 2.5 gon V to SWEREF 99.  The
-     * incantation is taken from
-     * http://wiki.openstreetmap.org/wiki/Converting_to_WGS84#Sweden
-     * but the exact numbers come from
-     *
-     * EPSG=3847
-     * SWEREF99 / RT90 2.5 gon V emulation
-     *
-     * Unclear if the wiki was sloppy with the fine details, or if
-     * it's an effect of a difference between WGS84 and SWEREF99.
-     *
-     * Projection 'b' is translation SWEREF99 lat/long -> planar
-     * coordinates. And for that it seems EPSG=3006 from the libproj
-     * distribution is correct.
-     *
-     * EPSG=3006
-     * SWEREF99 TM
-     *
-     */
-    assert(a);
-    assert(b);
+    assert(pj);
 }
 
 
 Transform::~Transform()
 {
-    pj_free(a);
-    pj_free(b);
+    proj_destroy(pj);
 }
 
 
 namespace {
 
+    PJ_COORD convert(Planar coord)
+    {
+	return proj_coord(coord.y, coord.x, 0, 0);
+    }
+
+    Planar convert(PJ_COORD coord)
+    {
+	return {coord.xy.y, coord.xy.x};
+    }
+
     /**
      * Helper function, to cope with the weird pj_transform()
      * interface.
      */
-    Planar transform(projPJ src, projPJ dst, Planar coord)
+    template <PJ_DIRECTION dir>
+    Planar transform(PJ* pj, Planar coord)
     {
-	double x = coord.x;
-	double y = coord.y;
-	double z = 0;
-	int rc = pj_transform(src, dst,
-			      1, 1,
-			      &y, &x, &z);
-	/* Unclear why x and y are reversed here. Probably for the
-	 * same reason you invoke cs2cs(1) with '-rs' when you use the
-	 * commandline.  I also cannot explain the zero 'z'
-	 * coordinate.
-	 *
-	 * Anyway, the point is: doing it this way makes the tests
-	 * pass.
-	 */
-	assert(!rc);
-	return Planar(x, y);
+	auto c = proj_trans(pj, dir, convert(coord));
+	return convert(c);
     }
 }
 
@@ -89,7 +60,7 @@ namespace {
  */
 Planar Transform::forward(const Planar& p) const
 {
-    return transform(a, b, p);
+    return transform<PJ_FWD>(pj, p);
 }
 
 
@@ -98,11 +69,11 @@ Planar Transform::forward(const Planar& p) const
  */
 Planar Transform::backward(const Planar& p) const
 {
-    return transform(b, a, p);
+    return transform<PJ_INV>(pj, p);
 }
 
 
-const char* Transform::pj_release()
+std::string Transform::pj_release()
 {
-    return pj_get_release();
+    return proj_info().version;
 }

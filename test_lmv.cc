@@ -12,26 +12,29 @@
 
 namespace {
 
+    /* PROJ4 gave ~1mm errors; PROJ version 7 gives more than 0.1
+     * meter. "Change is inevitable; progress is not."
+     */
+    void assert_near(const Planar& a, const Planar& b)
+    {
+	orchis::assert_lt(distance2(a, b), 0.2*0.2);
+    }
+
     /**
-     * Assert that 'rt90' transforms to 'ref', with an error of at
-     * most 0.1m.
-     *
-     * 0.1m is small enough to show dramatic fuckups, small enough not
-     * to matter for my purposes ... and large enough not to trigger
-     * on the ~1mm errors I've seen when playing with cs2cs(1)
+     * Assert that 'rt90' transforms to 'ref', or something close.
      */
     void assert_from(const Planar& rt90, const Planar& ref)
     {
 	Transform transform;
 	const Planar p = transform.forward(rt90);
-	orchis::assert_lt(distance2(p, ref), 0.1*0.1);
+	assert_near(p, ref);
     }
 
     void assert_to(const Planar& sweref99, const Planar& ref)
     {
 	Transform transform;
 	const Planar p = transform.backward(sweref99);
-	orchis::assert_lt(distance2(p, ref), 0.1*0.1);
+	assert_near(p, ref);
     }
 }
 
@@ -40,6 +43,7 @@ namespace lmv {
 
     void test_forward()
     {
+	Transform::morons();
 	assert_from(lmv.rt90.A, lmv.sweref99.A);
 	assert_from(lmv.rt90.B, lmv.sweref99.B);
 	assert_from(lmv.rt90.C, lmv.sweref99.C);
@@ -48,6 +52,7 @@ namespace lmv {
 
     void test_backward()
     {
+	Transform::morons();
 	assert_to(lmv.sweref99.A, lmv.rt90.A);
 	assert_to(lmv.sweref99.B, lmv.rt90.B);
 	assert_to(lmv.sweref99.C, lmv.rt90.C);

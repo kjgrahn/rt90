@@ -3,6 +3,13 @@
 # Experiments with proj(1) and RT90/SWEREF99 transformations.
 # I had to experiment a lot to find out how this really works.
 
+cat <<EOF
+These experiments were for PROJ.4 and don't really work with PROJ 7.
+I haven't tried fixing them.  Interesting that they decided to break
+the command-line interface too.
+
+EOF
+
 # LMV's test data (points A--D)
 # RT 90 2.5 gon V
 A="7453389.762 1727060.905"
