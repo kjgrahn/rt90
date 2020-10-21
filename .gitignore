@@ -2,7 +2,7 @@ rt90.1.p*
 rt90
 *.o
 *.a
-Makefile.bak
+dep/
 test.cc
 tests
 TAGS

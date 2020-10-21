@@ -20,8 +20,9 @@ install: rt90
 clean:
 	$(RM) rt90.1.{ps,pdf}
 	$(RM) *.[oa]
-	$(RM) test.cc Makefile.bak
+	$(RM) test.cc
 	$(RM) rt90 tests
+	$(RM) -r dep
 
 CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
 
@@ -68,14 +69,14 @@ depend:
 love:
 	@echo "not war?"
 
-# DO NOT DELETE
+$(shell mkdir -p dep)
+DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
+COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+COMPILE.c=$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
-coordinate.o: coordinate.h
-coord_transform.o: coordinate.h planar.h transform.h
-lmv_ctrl.o: lmv_ctrl.h planar.h
-planar.o: planar.h
-rt90.o: transform.h planar.h coordinate.h lmv_ctrl.h direction.h
-test_coord.o: coordinate.h transform.h planar.h
-test_lmv.o: planar.h transform.h lmv_ctrl.h
-test_parser.o: coordinate.h
-transform.o: transform.h planar.h
+%.o: %.cc
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	@mv dep/$*.{Td,d}
+
+dep/%.d: ;
+-include dep/*.d
