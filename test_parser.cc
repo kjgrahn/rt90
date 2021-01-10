@@ -3,7 +3,7 @@
  * Copyright (c) 2012 Jörgen Grahn
  * All rights reserved.
  */
-#include <testicle.h>
+#include <orchis.h>
 
 #include "coordinate.h"
 
@@ -19,9 +19,9 @@ namespace parser {
 	unsigned north;
 	unsigned east;
 	bool ok = parse(acc, rt90, s, north, east);
-	testicle::assert_(ok);
-	testicle::assert_eq(n, north);
-	testicle::assert_eq(e, east);
+	orchis::assert_true(ok);
+	orchis::assert_eq(n, north);
+	orchis::assert_eq(e, east);
     }
 
     void assert_fails(const Accuracy& acc,
@@ -30,7 +30,7 @@ namespace parser {
 	unsigned north;
 	unsigned east;
 	bool ok = parse(acc, true, s, north, east) || parse(acc, false, s, north, east);
-	testicle::assert_(!ok);
+	orchis::assert_false(ok);
     }
 
     void test_positive()

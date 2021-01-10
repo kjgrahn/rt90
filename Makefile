@@ -34,7 +34,7 @@ checkv: tests
 	valgrind -q ./tests -v
 
 test.cc: libtest.a
-	testicle -o$@ $^
+	orchis -o$@ $^
 
 tests: test.o librt90.a libtest.a
 	$(CXX) -o $@ test.o -L. -ltest -lrt90 -lproj -lm

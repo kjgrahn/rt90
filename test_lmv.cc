@@ -3,7 +3,7 @@
  * Copyright (c) 2012 Jörgen Grahn
  * All rights reserved.
  */
-#include <testicle.h>
+#include <orchis.h>
 
 #include "planar.h"
 #include "transform.h"
@@ -24,14 +24,14 @@ namespace {
     {
 	Transform transform;
 	const Planar p = transform.forward(rt90);
-	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
+	orchis::assert_lt(distance2(p, ref), 0.1*0.1);
     }
 
     void assert_to(const Planar& sweref99, const Planar& ref)
     {
 	Transform transform;
 	const Planar p = transform.backward(sweref99);
-	testicle::assert_lt(distance2(p, ref), 0.1*0.1);
+	orchis::assert_lt(distance2(p, ref), 0.1*0.1);
     }
 }
 
