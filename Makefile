@@ -10,6 +10,7 @@ INSTALLBASE=/usr/local
 
 .PHONY: all
 all: rt90
+all: tests
 
 .PHONY: install
 install: rt90
@@ -24,7 +25,7 @@ clean:
 	$(RM) rt90 tests
 	$(RM) -r dep
 
-CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++98 -g -Os
+CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++11 -g -Os
 
 .PHONY: check checkv
 check: tests
@@ -58,7 +59,7 @@ libtest.a: test_parser.o
 %.1.pdf : %.1.ps
 	ps2pdf $< >$@
 
-.PHONY: tags
+.PHONY: tags TAGS
 tags: TAGS
 TAGS:
 	etags *.cc *.h
