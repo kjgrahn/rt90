@@ -26,6 +26,7 @@ clean:
 	$(RM) -r dep
 
 CXXFLAGS=-Wall -Wextra -pedantic -Wold-style-cast -std=c++11 -g -Os
+ARFLAGS=rTP
 
 .PHONY: check checkv
 check: tests
@@ -47,12 +48,12 @@ librt90.a: transform.o
 librt90.a: coordinate.o
 librt90.a: coord_transform.o
 librt90.a: lmv_ctrl.o
-	$(AR) -r $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 libtest.a: test_lmv.o
 libtest.a: test_coord.o
 libtest.a: test_parser.o
-	$(AR) -r $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 %.1.ps : %.1
 	groff -man -ma4 $< >$@
@@ -62,10 +63,7 @@ libtest.a: test_parser.o
 .PHONY: tags TAGS
 tags: TAGS
 TAGS:
-	etags *.cc *.h
-
-depend:
-	makedepend -- $(CFLAGS) -- -Y *.cc
+	ctags --exclude='test*' -eR . --extra=q
 
 love:
 	@echo "not war?"
