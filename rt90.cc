@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cerrno>
 #include <cassert>
+#include <vector>
 
 #include <getopt.h>
 
@@ -30,20 +31,21 @@ namespace {
     /**
      * The "convert the coordinate on the command line" mode.
      */
-    int convert(const Direction direction,
-		const Accuracy& acc,
-		const char* const north,
-		const char* const east)
+    template <class Arg>
+    int convert(const Arg arg)
     {
+	const char* const north = arg.argv[0];
+	const char* const east  = arg.argv[1];
+
 	const Transform t;
 
 	unsigned x, y;
-	if(!parse(acc, north, east, x, y)) {
+	if(!parse(arg.accuracy, north, east, x, y)) {
 	    err("");
 	    return 1;
 	}
 
-	if(direction==FROM_RT90) {
+	if(arg.direction==FROM_RT90) {
 	    const Rt90 rt90(x, y);
 	    if(rt90.valid()) {
 		std::cout << convert(t, rt90) << '\n';
@@ -53,10 +55,10 @@ namespace {
 		return 1;
 	    }
 	}
-	else if(direction==TO_RT90) {
+	else if(arg.direction==TO_RT90) {
 	    const Sweref99 sw99(x, y);
 	    if(sw99.valid()) {
-		convert(t, sw99).put(std::cout, acc) << '\n';
+		convert(t, sw99).put(std::cout, arg.accuracy) << '\n';
 	    }
 	    else {
 		err("SWEREF99 ");
@@ -70,7 +72,7 @@ namespace {
 		std::cout << convert(t, rt90) << '\n';
 	    }
 	    else if(sw99.valid()) {
-		convert(t, sw99).put(std::cout, acc) << '\n';
+		convert(t, sw99).put(std::cout, arg.accuracy) << '\n';
 	    }
 	    else {
 		err("");
@@ -171,15 +173,15 @@ namespace {
      * The "convert stdin to stdout" mode. Because of user interface
      * issues, the user has to choose the direction explicitly.
      */
-    int convert(const Direction direction,
-		const Accuracy& acc,
+    template <class Arg>
+    int convert(const Arg arg,
 		std::istream& is)
     {
-	switch(direction) {
+	switch(arg.direction) {
 	case FROM_RT90:
-	    return convert_from(acc, is);
+	    return convert_from(arg.accuracy, is);
 	case TO_RT90:
-	    return convert_to(acc, is);
+	    return convert_to(arg.accuracy, is);
 	default:
 	    assert(0);
 	}
@@ -248,8 +250,12 @@ int main(int argc, char ** argv)
 
     Transform::morons();
 
-    Accuracy accuracy;
-    Direction direction = BOTH_DIRECTIONS;
+    struct {
+	Accuracy accuracy;
+	Direction direction = BOTH_DIRECTIONS;
+	std::vector<const char*> argv;
+    } arg;
+
     bool test = false;
 
     int ch;
@@ -258,23 +264,23 @@ int main(int argc, char ** argv)
 			    &long_options[0], 0)) != -1) {
 	switch(ch) {
 	case 'f':
-	    direction = FROM_RT90; break;
+	    arg.direction = FROM_RT90; break;
 	case 't':
-	    direction = TO_RT90; break;
+	    arg.direction = TO_RT90; break;
 	case 'T':
 	    test = true; break;
 	case '4':
 	case '5':
 	case '6':
 	case '7':
-	    accuracy << (ch - '0');
+	    arg.accuracy << (ch - '0');
 	    break;
 	case 'h':
 	    std::cout << usage << '\n';
 	    return 0;
 	case 'v':
 	    std::cout << prog << " version 3.0\n"
-		      << "Copyright (c) 2012, 2020, 2021 Jörgen Grahn.\n"
+		      << "Copyright (c) 2012, 2020, 2021, 2024 Jörgen Grahn.\n"
 		      << "Using PROJ " << Transform::pj_release() << ".\n";
 	    return 0;
 	    break;
@@ -288,25 +294,25 @@ int main(int argc, char ** argv)
 	}
     }
 
-    if(accuracy.empty()) {
-	accuracy << 5 << 6 << 7;
+    arg.argv.assign(argv+optind, argv+argc);
+
+    if(arg.accuracy.empty()) {
+	arg.accuracy << 5 << 6 << 7;
     }
 
     if(test) {
 	return selftest();
     }
-    else if(argc - optind == 2) {
-	return convert(direction, accuracy,
-		       argv[optind], argv[optind+1]);
+    else if(arg.argv.size() == 2) {
+	return convert(arg);
     }
-    else if(argc - optind == 0) {
-	if(direction==BOTH_DIRECTIONS) {
+    else if(arg.argv.empty()) {
+	if(arg.direction==BOTH_DIRECTIONS) {
 	    std::cerr << "error: mandatory argument missing\n"
 		      << usage << '\n';
 	    return 1;
 	}
-	return convert(direction, accuracy,
-		       std::cin);
+	return convert(arg, std::cin);
     }
     else {
 	std::cerr << "error: argyment is not a coordinate\n";
