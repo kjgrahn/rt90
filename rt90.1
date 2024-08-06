@@ -82,8 +82,9 @@ There are also shorter forms with 10\ m, 100\ m and 1\ km resolution:
 \s-264\s0521\ \s-213\s0680,
 \s-264\s052\ \s-213\s068.
 Much software today seem to only accept the full 7-digit format,
-but older data is often not in 1m resolution. Some sources
-also use different resolutions to indicate the actual accuracy.
+but older data is often not in 1m resolution (because it rarely makes sense,
+and people knew this). Some sources
+also vary the resolution to indicate the actual accuracy.
 .PP
 No matter what, a \*[rt90] coordinate cannot be mistaken for a \*[sweref99] one;
 the latter always uses 7+6 digits and the former never does.
@@ -104,17 +105,11 @@ from \*[sweref99]
 .IR "to \*[rt90]" .
 Only coordinates which seem like correct \*[sweref99] coordinates
 are translated.
-.BP
-The synonym
-.B --back
-is supposed to be easier to remember; you're going
-.I back
-to an older system.
 .
 .PP
 One of these is mandatory when translating from standard input.
 When translating a coordinate supplied on the command line,
-they are optional \-
+they are optional:
 without them, coordinates which look like \*[rt90]
 are translated to \*[sweref99], and vice versa.
 .
@@ -179,6 +174,7 @@ X:\ 6452109,\ Y:\ 1368036
 N=6452109,\ E=1368036
 6452109,\ 1368036
 6452109/1368036
+O1368036,\ N6452109
 .fi
 .
 .PP
@@ -190,6 +186,20 @@ better suited to different parts of the country. These are
 .IR "not supported" .
 I hope they are rarely relevant in situations where you'd want to use
 this tool.
+.
+.PP
+Low-resolution \*[rt90] coordinates are
+.I rounded
+by
+.BR rt90 .
+Historically they have been
+.IR truncated :
+\s-264\s052\ \s-213\s068 is the 1\ km square with its
+SW corner at \s-264\s052000 \s-213\s068000.
+This change is an unfortunate source of errors. I've found no solution,
+and
+.I Lantm\(:ateriet
+hasn't offered one, as far as I know.
 .
 .PP
 I don't own a GPS receiver.
