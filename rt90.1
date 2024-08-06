@@ -9,7 +9,7 @@
 .
 .
 .
-.TH rt90 1 "AUG 2021" "RT90" "User Manuals"
+.TH rt90 1 "AUG 2024" "RT90" "User Manuals"
 .
 .SH "NAME"
 rt90 \- coordinate conversion between RT90 and SWEREF99
@@ -18,6 +18,7 @@ rt90 \- coordinate conversion between RT90 and SWEREF99
 .
 .B rt90
 .RB [ \-4567 ]
+.RB [ --tolerant ]
 .RB [ --from | --to ]
 .I north
 .I east
@@ -64,7 +65,9 @@ it, I'm sure).
 .
 Coordinates may be given on the command line, or as standard input.
 .BR "On the command line" ,
-it's just two numerical arguments \- north and east.
+it's just two numerical arguments \- north and east \- unless you use the
+.B \-T
+option.
 .BR "On standard input" ,
 any line which is just two suitably large
 numbers (separated by whitespace) is processed as a coordinate and translated.
@@ -112,6 +115,16 @@ When translating a coordinate supplied on the command line,
 they are optional:
 without them, coordinates which look like \*[rt90]
 are translated to \*[sweref99], and vice versa.
+.
+.BP \-T,\ --tolerant
+When translating a coordinate supplied on the command line,
+tolerate and ignore anything that's not digits. i.e. handle
+any text containing exactly two numbers, in any order,
+as a possible coordinate.
+.IP
+This is helpful since there's (unfortunately) no accepted standard
+format for coordinates: various sources will decorate them with N and
+E, N and O or \(:O, X and Y, swap northing and easting, and so on.
 .
 .BP \-4,\ \-5,\ \-6,\ \-7
 When translating to \*[rt90], use the 4-, 5-, 6- or 7-digit format
@@ -164,8 +177,9 @@ meaningful.
 There are countless non-standard variants on the syntax of a
 RT90 coordinate.
 .B rt90
-only supports whitespace-separated numbers, as documented on the
-topographical maps. I don't want to
+doesn't support them, except with the crude
+.B \-T
+option. I don't want to
 help promulgate bastardized notations such as these:
 .IP
 .nf

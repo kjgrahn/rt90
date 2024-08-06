@@ -6,6 +6,7 @@
 #include "coordinate.h"
 
 #include <iostream>
+#include <vector>
 #include <cassert>
 #include <cstdlib>
 #include <cctype>
@@ -236,4 +237,53 @@ bool parse(const Accuracy& accuracy,
 
     return digits_of(north)==digits_of(east) &&
 	accuracy.tolerated(north);
+}
+
+
+namespace {
+
+    bool isdigit(char ch)
+    {
+	return std::isdigit(static_cast<unsigned char>(ch));
+    }
+
+    std::vector<const char*> find_numbers(const char* p)
+    {
+	std::vector<const char*> acc;
+
+	char prev = 'x';
+	while (*p) {
+	    if (isdigit(*p) && !isdigit(prev)) {
+		acc.push_back(p);
+	    }
+	    prev = *p++;
+	}
+	return acc;
+    }
+}
+
+/**
+ * Parse a string containing exactly two numbers, and other crud. This
+ * is for the rt90 --tolerant option.
+ *
+ * Unfortunately, since we want to fix swapped coordinates (east,
+ * north) we need form four coordinates, and swap the numbers if that
+ * helps. Then the calling code then forms coordinates again --
+ * stupid, but I don't want to do major refactoring and incolve
+ * accurracy, whether the user asked for RT90 or not, and so on.
+ */
+bool parse(const std::string& s,
+	   unsigned& north, unsigned& east)
+{
+    const char* const ss = s.c_str();
+    const auto v = find_numbers(ss);
+    if (v.size()!=2) return false;
+    north = std::strtoul(v[0], nullptr, 10);
+    east  = std::strtoul(v[1], nullptr, 10);
+
+    Rt90 rb {east, north};
+    Sweref99 sb {east, north};
+
+    if (rb.valid() || sb.valid()) std::swap(north, east);
+    return true;
 }

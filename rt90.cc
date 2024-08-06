@@ -18,6 +18,7 @@
 #include "coordinate.h"
 #include "lmv_ctrl.h"
 #include "direction.h"
+#include "join.h"
 
 
 namespace {
@@ -34,15 +35,23 @@ namespace {
     template <class Arg>
     int convert(const Arg arg)
     {
-	const char* const north = arg.argv[0];
-	const char* const east  = arg.argv[1];
-
 	const Transform t;
 
 	unsigned x, y;
-	if(!parse(arg.accuracy, north, east, x, y)) {
-	    err("");
-	    return 1;
+
+	if(arg.tolerant) {
+	    if(!parse(join(' ', arg.argv), x, y)) {
+		err("");
+		return 1;
+	    }
+	}
+	else {
+	    const char* const north = arg.argv[0];
+	    const char* const east  = arg.argv[1];
+	    if(!parse(arg.accuracy, north, east, x, y)) {
+		err("");
+		return 1;
+	    }
 	}
 
 	if(arg.direction==FROM_RT90) {
@@ -224,7 +233,7 @@ int main(int argc, char ** argv)
 
     const string prog = argv[0] ? argv[0] : "proj";
     const string usage = string("usage: ")
-	+ prog + " [-4567] [--from|--to] north east\n"
+	+ prog + " [-4567] [--tolerant] [--from|--to] north east\n"
 	+ "       "
 	+ prog + " [-4567] --from|--to < coordinates\n"
 	+ "       "
@@ -234,12 +243,13 @@ int main(int argc, char ** argv)
 	+ "       "
 	+ prog + " --help";
 
-    const char optstring[] = "4567";
+    const char optstring[] = "4567T";
     struct option long_options[] = {
 	{"from",    0, 0, 'f'},
 	{"to",      0, 0, 't'},
 	{"back",    0, 0, 't'},
-	{"test",    0, 0, 'T'},
+	{"tolerant",0, 0, 'T'},
+	{"test",    0, 0, 'E'},
 	{"version", 0, 0, 'v'},
 	{"help",    0, 0, 'h'},
 	{0, 0, 0, 0}
@@ -253,6 +263,7 @@ int main(int argc, char ** argv)
     struct {
 	Accuracy accuracy;
 	Direction direction = BOTH_DIRECTIONS;
+	bool tolerant = false;
 	std::vector<const char*> argv;
     } arg;
 
@@ -268,6 +279,8 @@ int main(int argc, char ** argv)
 	case 't':
 	    arg.direction = TO_RT90; break;
 	case 'T':
+	    arg.tolerant = true; break;
+	case 'E':
 	    test = true; break;
 	case '4':
 	case '5':
@@ -303,7 +316,7 @@ int main(int argc, char ** argv)
     if(test) {
 	return selftest();
     }
-    else if(arg.argv.size() == 2) {
+    else if(arg.argv.size() == 2 || arg.tolerant) {
 	return convert(arg);
     }
     else if(arg.argv.empty()) {

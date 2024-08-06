@@ -84,6 +84,9 @@ bool parse(const Accuracy& accuracy,
 	   const char* a, const char* b,
 	   unsigned& north, unsigned& east);
 
+bool parse(const std::string& s,
+	   unsigned& north, unsigned& east);
+
 inline
 std::ostream& operator<< (std::ostream& os, const Rt90& val) {
     return val.put(os);
