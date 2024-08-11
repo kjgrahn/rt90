@@ -54,6 +54,7 @@ librt90.a: lmv_ctrl.o
 test/libtest.a: test/lmv.o
 test/libtest.a: test/coord.o
 test/libtest.a: test/parser.o
+test/libtest.a: test/join.o
 	$(AR) $(ARFLAGS) $@ $^
 
 test/%.o: CPPFLAGS+=-I.
