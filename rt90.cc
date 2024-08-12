@@ -292,7 +292,7 @@ int main(int argc, char ** argv)
 	    std::cout << usage << '\n';
 	    return 0;
 	case 'v':
-	    std::cout << prog << " version 3.0\n"
+	    std::cout << prog << " version 3.1\n"
 		      << "Copyright (c) 2012, 2020, 2021, 2024 Jörgen Grahn.\n"
 		      << "Using PROJ " << Transform::pj_release() << ".\n";
 	    return 0;
